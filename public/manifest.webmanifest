@@ -1,0 +1,16 @@
+{
+  "name": "PRETAG Ashanti Membership Intelligence",
+  "short_name": "PRETAG AMIS",
+  "description": "Upload, validate and analyse the monthly Ashanti Regional R20.",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#130a09",
+  "theme_color": "#c4161c",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

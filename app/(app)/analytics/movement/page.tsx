@@ -1,6 +1,9 @@
 import Link from "next/link";
 import { PageHeader, Card } from "@/components/ui";
 import { getImportedPeriods, getMovers } from "@/lib/analytics";
+import { getSessionUser, isStaff } from "@/lib/auth";
+import { createClient } from "@/lib/supabase/server";
+import { ReasonSelect } from "@/components/ReasonSelect";
 
 export const metadata = { title: "Membership Movement - PRETAG AMIS" };
 
@@ -35,6 +38,27 @@ export default async function MovementPage({
 
   const movers = await getMovers(fromId, toId, kind);
   const isTransfer = kind === "transfer";
+
+  const session = await getSessionUser();
+  const canEdit = isStaff(session?.profile?.role);
+  const mvType = kind === "added" ? "added" : kind === "missing" ? "missing" : "internal";
+
+  // existing reasons for the members shown
+  const reasonBy = new Map<string, string>();
+  if (canEdit && movers.length) {
+    const supabase = createClient();
+    const empNos = movers.slice(0, 500).map((m) => m.employee_no);
+    const { data } = await supabase
+      .from("membership_movement_reasons")
+      .select("reason, members!inner(employee_no)")
+      .eq("period_id", toId)
+      .eq("movement_type", mvType)
+      .in("members.employee_no", empNos);
+    for (const r of data ?? []) {
+      const en = (r.members as { employee_no?: string } | null)?.employee_no;
+      if (en) reasonBy.set(en, r.reason as string);
+    }
+  }
 
   return (
     <>
@@ -83,6 +107,7 @@ export default async function MovementPage({
                     <th className="text-left px-3 py-2">District</th>
                   </>
                 )}
+                {canEdit && <th className="text-left px-3 py-2">Reason</th>}
               </tr>
             </thead>
             <tbody>
@@ -111,6 +136,16 @@ export default async function MovementPage({
                       <td className="px-3 py-1.5">{m.to_zone ?? m.from_zone}</td>
                       <td className="px-3 py-1.5 text-ink-3">{m.to_district ?? m.from_district}</td>
                     </>
+                  )}
+                  {canEdit && (
+                    <td className="px-3 py-1">
+                      <ReasonSelect
+                        employeeNo={m.employee_no}
+                        periodId={toId}
+                        kind={kind}
+                        current={reasonBy.get(m.employee_no) ?? null}
+                      />
+                    </td>
                   )}
                 </tr>
               ))}

@@ -1,6 +1,7 @@
 import { PageHeader, Card, StatTile } from "@/components/ui";
 import { TrendChart } from "@/components/charts/TrendChart";
 import { membershipSeries, comparePeriods } from "@/lib/analytics";
+import { projectMembership, monthlyRate } from "@/lib/forecast";
 
 export const metadata = { title: "Multi-Month Analysis - PRETAG AMIS" };
 
@@ -59,8 +60,22 @@ export default async function MultiMonthPage() {
       </div>
 
       <Card className="mb-6">
-        <h3 className="font-display text-sm uppercase tracking-tight mb-2">Membership trend</h3>
-        <TrendChart data={series.map((s) => ({ label: s.label, members: s.members }))} />
+        <div className="flex items-baseline justify-between flex-wrap gap-2 mb-2">
+          <h3 className="font-display text-sm uppercase tracking-tight">Membership trend &amp; projection</h3>
+          {monthlyRate(series.map((s) => ({ label: s.label, members: s.members }))) !== null && (
+            <span className="font-mono text-xs text-ink-3">
+              average {monthlyRate(series.map((s) => ({ label: s.label, members: s.members })))!.toFixed(2)}% / month
+            </span>
+          )}
+        </div>
+        <TrendChart
+          data={series.map((s) => ({ label: s.label, members: s.members }))}
+          projection={projectMembership(series.map((s) => ({ label: s.label, members: s.members })), 3)}
+        />
+        <p className="text-[11px] font-mono text-ink-3 mt-2">
+          Dashed line: straight-line projection from the trend so far. A guide, not a target &mdash; it does not
+          account for mobilisation drives, payroll events or seasonality.
+        </p>
       </Card>
 
       <div className="grid md:grid-cols-2 gap-4 mb-6">

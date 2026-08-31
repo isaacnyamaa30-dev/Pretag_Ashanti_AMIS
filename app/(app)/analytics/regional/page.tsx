@@ -1,6 +1,8 @@
 import { PageHeader, Card, StatTile } from "@/components/ui";
 import { CompareTable } from "@/components/CompareTable";
+import { CopyText } from "@/components/CopyText";
 import { getImportedPeriods, comparePeriods, periodSummary, statusClasses } from "@/lib/analytics";
+import { executiveSummary } from "@/lib/summary";
 
 export const metadata = { title: "Regional Analysis - PRETAG AMIS" };
 
@@ -59,6 +61,7 @@ export default async function RegionalPage() {
   const growing = rows.filter((r) => r.level === "zone" && r.status === "growing").length;
   const stable = rows.filter((r) => r.level === "zone" && r.status === "stable").length;
   const declining = rows.filter((r) => r.level === "zone" && r.status === "declining").length;
+  const execText = executiveSummary(rows, previous.label, latest.label);
 
   return (
     <>
@@ -87,6 +90,18 @@ export default async function RegionalPage() {
           retention {region.retention_pct ?? "-"}%
         </span>
       </div>
+
+      <Card className="mb-8">
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <h3 className="font-display text-sm uppercase tracking-tight">Executive summary</h3>
+          <CopyText text={execText} />
+        </div>
+        <p className="text-ink-2 leading-relaxed max-w-prose">{execText}</p>
+        <p className="text-[11px] font-mono text-ink-3 mt-3">
+          Generated from the figures above. Describes movement in and out of the R20 - not verified
+          reasons for it.
+        </p>
+      </Card>
 
       <h3 className="font-display text-sm uppercase tracking-tight mb-2">Zone performance</h3>
       <CompareTable rows={rows} linkZones />

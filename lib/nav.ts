@@ -21,6 +21,7 @@ export const NAV: NavGroup[] = [
       { label: "Zones", href: "/analytics/zones", ready: true },
       { label: "Districts", href: "/analytics/districts", ready: true },
       { label: "Membership Movement", href: "/analytics/movement", ready: true },
+      { label: "Zone Scorecard", href: "/analytics/scorecard", ready: true },
     ],
   },
   {
@@ -29,6 +30,14 @@ export const NAV: NavGroup[] = [
       { label: "Monthly", href: "/compare/monthly", ready: true },
       { label: "Multi-Month", href: "/compare/multi", ready: true },
     ],
+  },
+  {
+    label: "Members",
+    items: [{ label: "Search", href: "/members", ready: true }],
+  },
+  {
+    label: "Reports",
+    items: [{ label: "Regional Report", href: "/reports/regional", ready: true }],
   },
   {
     label: "Export Centre",

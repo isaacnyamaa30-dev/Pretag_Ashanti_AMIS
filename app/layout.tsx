@@ -3,8 +3,9 @@
  * Copyright (c) 2026 Isaac Nyamaa Boadi. All rights reserved.
  * Developed by Isaac Nyamaa Boadi for PRETAG Ashanti. See /LICENSE.
  */
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Archivo, Source_Serif_4, IBM_Plex_Mono } from "next/font/google";
+import { RegisterSW } from "@/components/RegisterSW";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -37,12 +38,27 @@ export const metadata: Metadata = {
   other: {
     copyright: "Copyright (c) 2026 Isaac Nyamaa Boadi. All rights reserved.",
   },
+  manifest: "/manifest.webmanifest",
+  appleWebApp: { capable: true, title: "PRETAG AMIS", statusBarStyle: "black-translucent" },
+  icons: {
+    icon: [{ url: "/icon-192.png", sizes: "192x192" }, { url: "/icon-512.png", sizes: "512x512" }],
+    apple: "/apple-touch-icon.png",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#c4161c",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${archivo.variable} ${sourceSerif.variable} ${plexMono.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <RegisterSW />
+      </body>
     </html>
   );
 }

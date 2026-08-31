@@ -109,6 +109,86 @@ export async function buildZoneWorkbook(periodId: number, zoneId: number, label:
   };
 }
 
+export async function buildComparisonWorkbook(
+  prevId: number,
+  curId: number,
+  prevLabel: string,
+  curLabel: string,
+) {
+  const supabase = createClient();
+  const [{ data: zoneRows }, { data: distRows }, { data: added }, { data: missing }, { data: transfers }] =
+    await Promise.all([
+      supabase.rpc("compare_periods", { p_prev: prevId, p_cur: curId }),
+      supabase.rpc("compare_districts", { p_prev: prevId, p_cur: curId }),
+      supabase.rpc("period_movers", { p_prev: prevId, p_cur: curId, p_kind: "added" }),
+      supabase.rpc("period_movers", { p_prev: prevId, p_cur: curId, p_kind: "missing" }),
+      supabase.rpc("period_movers", { p_prev: prevId, p_cur: curId, p_kind: "transfer" }),
+    ]);
+
+  const wb = new ExcelJS.Workbook();
+  wb.creator = "PRETAG AMIS";
+
+  const region = (zoneRows ?? []).find((r: Record<string, unknown>) => r.level === "region");
+  const ov = wb.addWorksheet("Overview");
+  ov.addRow(["PRETAG Ashanti - Membership Comparison"]);
+  ov.getRow(1).font = { bold: true, size: 14 };
+  ov.addRow([]);
+  ov.addRow(["From", prevLabel]);
+  ov.addRow(["To", curLabel]);
+  ov.addRow([]);
+  if (region) {
+    for (const [k, label] of [
+      ["previous", "Opening membership"], ["current", "Closing membership"],
+      ["added", "Added to current R20"], ["missing", "Missing from current R20"],
+    ] as const) {
+      ov.addRow([label, Number((region as Record<string, unknown>)[k])]);
+    }
+    const net = Number(region.current) - Number(region.previous);
+    ov.addRow(["Net change", net]);
+    ov.addRow(["Growth %", Number(region.previous) ? Math.round((net / Number(region.previous)) * 10000) / 100 : "n/a"]);
+  }
+  ov.getColumn(1).width = 28;
+  ov.getColumn(2).width = 18;
+
+  const zoneHead = ["Area", "Previous", "Current", "Added", "Missing", "Transfers in", "Transfers out", "Net", "Growth %"];
+  const zs = wb.addWorksheet("Zones");
+  zs.addRow(zoneHead);
+  for (const r of (zoneRows ?? []).filter((x: Record<string, unknown>) => x.level === "zone")) {
+    const prev = Number(r.previous);
+    const cur = Number(r.current);
+    zs.addRow([r.name, prev, cur, Number(r.added), Number(r.missing), Number(r.transfers_in), Number(r.transfers_out), cur - prev, prev ? Math.round(((cur - prev) / prev) * 10000) / 100 : "n/a"]);
+  }
+
+  const ds = wb.addWorksheet("Districts");
+  ds.addRow(["District", "Zone", ...zoneHead.slice(1)]);
+  for (const r of distRows ?? []) {
+    const prev = Number(r.previous);
+    const cur = Number(r.current);
+    if (prev === 0 && cur === 0) continue;
+    ds.addRow([r.name, r.zone_name, prev, cur, Number(r.added), Number(r.missing), Number(r.transfers_in), Number(r.transfers_out), cur - prev, prev ? Math.round(((cur - prev) / prev) * 10000) / 100 : "n/a"]);
+  }
+
+  for (const [name, rows] of [["Added", added], ["No longer in R20", missing], ["Moved", transfers]] as const) {
+    const ws = wb.addWorksheet(name);
+    ws.addRow(["Employee no", "Name", "Management unit", "From zone", "To zone", "From district", "To district"]);
+    for (const m of rows ?? []) {
+      ws.addRow([m.employee_no, m.name, m.management_unit, m.from_zone, m.to_zone, m.from_district, m.to_district]);
+    }
+  }
+
+  for (const ws of wb.worksheets) {
+    ws.getRow(1).font = { bold: true };
+    ws.columns.forEach((c) => {
+      c.width = Math.max(c.width ?? 10, 14);
+    });
+  }
+
+  return {
+    buffer: Buffer.from(await wb.xlsx.writeBuffer()),
+    filename: `PRETAG_ASHANTI_COMPARISON_${prevLabel.replace(/\s+/g, "_")}_to_${curLabel.replace(/\s+/g, "_")}.xlsx`.toUpperCase(),
+  };
+}
+
 export async function buildAllZonesZip(periodId: number, label: string) {
   const supabase = createClient();
   const { data: zones } = await supabase.from("zones").select("id").order("zone_name");

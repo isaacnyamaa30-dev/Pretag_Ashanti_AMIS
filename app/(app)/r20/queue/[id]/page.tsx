@@ -79,6 +79,20 @@ export default async function UploadDetailPage({
         </div>
       )}
 
+      {(() => {
+        const q = upload.total_rows > 0 ? (upload.valid_rows / upload.total_rows) * 100 : 100;
+        const tone = q >= 99 ? "text-grow" : q >= 95 ? "text-stable" : "text-decline";
+        return (
+          <div className="mb-6 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <span className="font-display text-3xl font-extrabold tabular-nums">{q.toFixed(1)}%</span>
+            <span className={`font-mono text-xs uppercase tracking-wide ${tone}`}>data quality</span>
+            <span className="font-mono text-xs text-ink-3">
+              {upload.valid_rows} of {upload.total_rows} rows clean
+            </span>
+          </div>
+        );
+      })()}
+
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
         <StatTile value={upload.total_rows} label="source rows" />
         <StatTile value={upload.valid_rows} label="valid members" />

@@ -6,6 +6,7 @@ import {
   buildRegionalWorkbook,
   buildZoneWorkbook,
   buildAllZonesZip,
+  buildComparisonWorkbook,
 } from "@/lib/r20/export";
 
 export const dynamic = "force-dynamic";
@@ -19,9 +20,31 @@ export async function GET(req: NextRequest) {
   const type = params.get("type") ?? "regional";
   const zoneId = Number(params.get("zone"));
 
+  const supabase = createClient();
+
+  if (type === "comparison") {
+    const fromId = Number(params.get("from"));
+    const toId = Number(params.get("to"));
+    if (!fromId || !toId) return NextResponse.json({ error: "from and to required" }, { status: 400 });
+    const { data: ps } = await supabase
+      .from("reporting_periods")
+      .select("id, label")
+      .in("id", [fromId, toId]);
+    const fromLabel = ps?.find((p) => p.id === fromId)?.label ?? "prev";
+    const toLabel = ps?.find((p) => p.id === toId)?.label ?? "cur";
+    const cmp = await buildComparisonWorkbook(fromId, toId, fromLabel, toLabel);
+    await logAudit({ action: "export.comparison", resourceType: "reporting_period", details: { fromId, toId } });
+    return new NextResponse(cmp.buffer as BodyInit, {
+      headers: {
+        "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        "Content-Disposition": `attachment; filename="${cmp.filename}"`,
+        "Cache-Control": "no-store",
+      },
+    });
+  }
+
   if (!periodId) return NextResponse.json({ error: "period required" }, { status: 400 });
 
-  const supabase = createClient();
   const { data: period } = await supabase
     .from("reporting_periods")
     .select("label")

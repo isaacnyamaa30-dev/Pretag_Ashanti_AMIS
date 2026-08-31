@@ -6,6 +6,7 @@ const TABS = [
   { href: "/analytics/zones", label: "Zones" },
   { href: "/analytics/districts", label: "Districts" },
   { href: "/analytics/movement", label: "Movement" },
+  { href: "/analytics/scorecard", label: "Scorecard" },
   { href: "/compare/monthly", label: "Compare" },
 ];
 

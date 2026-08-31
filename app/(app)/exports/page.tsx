@@ -50,7 +50,7 @@ export default async function ExportsPage({ searchParams }: { searchParams: { pe
         </form>
       </Card>
 
-      <div className="grid md:grid-cols-2 gap-4 mb-8">
+      <div className="grid md:grid-cols-2 gap-4 mb-4">
         <Card>
           <h3 className="font-display text-sm uppercase tracking-tight mb-2">Regional</h3>
           <p className="text-sm text-ink-2 mb-3">One workbook, every member for {period.label}.</p>
@@ -68,6 +68,33 @@ export default async function ExportsPage({ searchParams }: { searchParams: { pe
           </a>
         </Card>
       </div>
+
+      {periods.length >= 2 && (
+        <Card className="mb-8">
+          <h3 className="font-display text-sm uppercase tracking-tight mb-2">Comparison report</h3>
+          <p className="text-sm text-ink-2 mb-3">
+            Regional, zone, district and member-level movement between two months, as one workbook.
+          </p>
+          <form action="/api/exports" method="get" className="flex flex-wrap items-end gap-3">
+            <input type="hidden" name="type" value="comparison" />
+            <label className="flex flex-col gap-1">
+              <span className="text-[11px] font-mono uppercase tracking-wide text-ink-2">From</span>
+              <select name="from" defaultValue={periods[1].id} className="border border-border-strong rounded bg-ground px-2.5 py-1.5 text-sm">
+                {periods.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+              </select>
+            </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-[11px] font-mono uppercase tracking-wide text-ink-2">To</span>
+              <select name="to" defaultValue={periods[0].id} className="border border-border-strong rounded bg-ground px-2.5 py-1.5 text-sm">
+                {periods.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+              </select>
+            </label>
+            <button className="font-mono text-xs uppercase tracking-wide bg-primary text-on-primary rounded px-3 py-2">
+              Download comparison
+            </button>
+          </form>
+        </Card>
+      )}
 
       <h3 className="font-display text-sm uppercase tracking-tight mb-3">Individual zones</h3>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
