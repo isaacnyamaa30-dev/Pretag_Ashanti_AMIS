@@ -51,6 +51,9 @@ export default function LoginPage() {
         <p className="text-center text-[11px] font-mono uppercase tracking-[0.18em] text-white/40 mt-6">
           Quality Education, Our Concern
         </p>
+        <p className="text-center text-[10px] font-mono text-white/30 mt-3">
+          &copy; {new Date().getFullYear()} Isaac Nyamaa Boadi &middot; all rights reserved
+        </p>
       </div>
     </main>
   );

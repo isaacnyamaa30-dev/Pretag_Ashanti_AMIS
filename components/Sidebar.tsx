@@ -17,7 +17,7 @@ export function Sidebar() {
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-4 px-2">
+      <nav className="flex-1 overflow-y-auto py-4 px-2" aria-label="Primary">
         {NAV.map((group) => (
           <div key={group.label} className="mb-4">
             <div className="px-3 pb-1 text-[10px] font-mono uppercase tracking-wider text-ink-3">
@@ -47,6 +47,10 @@ export function Sidebar() {
           </div>
         ))}
       </nav>
+      <div className="border-t border-border px-4 py-3 text-[10px] font-mono text-ink-3 leading-relaxed">
+        Developed by <span className="text-ink-2">Isaac Nyamaa Boadi</span>
+        <br />&copy; {new Date().getFullYear()} &middot; all rights reserved
+      </div>
     </aside>
   );
 }

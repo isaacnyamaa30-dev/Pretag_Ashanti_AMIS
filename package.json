@@ -1,8 +1,11 @@
 {
   "name": "pretag-ashanti-amis",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "description": "PRETAG Ashanti Membership Intelligence System",
+  "author": "Isaac Nyamaa Boadi <isaacnyamaa30@gmail.com>",
+  "license": "UNLICENSED",
+  "copyright": "Copyright (c) 2026 Isaac Nyamaa Boadi. All rights reserved.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
