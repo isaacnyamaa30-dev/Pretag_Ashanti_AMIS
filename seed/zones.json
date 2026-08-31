@@ -1,0 +1,128 @@
+[
+  {
+    "id": 1,
+    "zone_name": "Adansi",
+    "zone_code": "ADA",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 2,
+    "zone_name": "Ahafo Ano",
+    "zone_code": "AHA",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 3,
+    "zone_name": "Amansie",
+    "zone_code": "AMA",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 4,
+    "zone_name": "Asante Akim",
+    "zone_code": "ASA",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 5,
+    "zone_name": "Asokore Mampong",
+    "zone_code": "ASO",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 6,
+    "zone_name": "Atwima Kwanwoma",
+    "zone_code": "ATW",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 7,
+    "zone_name": "Atwima Nwabiagya",
+    "zone_code": "ATW",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 8,
+    "zone_name": "Bekwai",
+    "zone_code": "BEK",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 9,
+    "zone_name": "Bosome Freho",
+    "zone_code": "BOS",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 10,
+    "zone_name": "Bosomtwe",
+    "zone_code": "BOS",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 11,
+    "zone_name": "Ejisu",
+    "zone_code": "EJI",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 12,
+    "zone_name": "Ejura",
+    "zone_code": "EJU",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 13,
+    "zone_name": "Kumasi",
+    "zone_code": "KUM",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 14,
+    "zone_name": "Kwabre",
+    "zone_code": "KWA",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 15,
+    "zone_name": "Mampong",
+    "zone_code": "MAM",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 16,
+    "zone_name": "Offinso",
+    "zone_code": "OFF",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 17,
+    "zone_name": "Sekyere Kumawu",
+    "zone_code": "SEK",
+    "region": "Ashanti",
+    "is_active": true
+  },
+  {
+    "id": 18,
+    "zone_name": "Sekyere South & Central",
+    "zone_code": "SEK",
+    "region": "Ashanti",
+    "is_active": true
+  }
+]

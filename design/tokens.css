@@ -1,0 +1,75 @@
+/* PRETAG AMIS design tokens - derived from the PRETAG Ashanti logo.
+   Import once at the app root. Components read only var(--token), never a literal.
+   Light palette on :root; dark overrides only the token values. */
+
+:root {
+  /* ---- brand (from the logo) ---- */
+  --pretag-red:        #C4161C;   /* primary - the logo ring, deepened for text/AA on white */
+  --pretag-red-bright: #E11B1B;   /* logo-exact red - accents, focus, active */
+  --pretag-yellow:     #F7EFD5;   /* the logo field, softened to a page wash */
+  --pretag-gold:       #B07A12;   /* the hawk's plumage - secondary accent, usable as text */
+  --pretag-olive:      #5E6B18;   /* the pen shaft - tertiary accent */
+  --pretag-black:      #1C1712;   /* warm near-black - the heading ink */
+
+  /* ---- surfaces & text (light) ---- */
+  --ground:        #FCF9EE;
+  --surface:       #FFFFFF;
+  --surface-2:     #F7EFD5;
+  --border:        #E9DFC1;
+  --border-strong: #D5C89D;
+  --ink:           #1C1712;
+  --ink-2:         #574E40;
+  --ink-3:         #8A7F69;
+
+  /* ---- role tokens ---- */
+  --primary:        var(--pretag-red);
+  --primary-hover:  #A9121A;
+  --on-primary:     #FFFFFF;
+  --link:           #B0141A;
+  --focus-ring:     var(--pretag-red-bright);
+  --brand-wash:     #FBE7E0;
+  --gold-wash:      #F6E9C2;
+
+  /* ---- data semantics (per build-plan section 27/60) ---- */
+  --grow:          #4E7A1C;  --grow-wash:    #E9EFD7;
+  --stable:        #A8791A;  --stable-wash:  #F5E8C6;
+  --decline:       #A82318;  --decline-wash: #F3DED9;
+  /* NOTE: --decline and --primary are both red. Status must always pair colour
+     with an icon and a text label; --primary is reserved for chrome and actions. */
+
+  --shadow: 0 1px 2px rgba(28,23,18,.06), 0 10px 26px rgba(28,23,18,.06);
+  --radius: 8px;
+
+  /* ---- type ---- */
+  --font-display: "Archivo", "Arial Narrow", system-ui, sans-serif;   /* headings, uppercase, 700-800 */
+  --font-body:    "Source Serif 4", Georgia, "Times New Roman", serif; /* running text */
+  --font-mono:    "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace; /* data, codes, labels */
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground:#17120E; --surface:#211A14; --surface-2:#2B2015;
+    --border:#3B2F1F; --border-strong:#524229;
+    --ink:#F4ECD9; --ink-2:#C1B599; --ink-3:#8E8167;
+    --primary:#F0574E; --primary-hover:#F4655B; --on-primary:#1C1712;
+    --link:#F0736A; --focus-ring:#F4655B;
+    --brand-wash:#331A18; --gold-wash:#33270F;
+    --grow:#83B341;  --grow-wash:#1F2B12;
+    --stable:#D79B3C; --stable-wash:#2F2410;
+    --decline:#E56A5C; --decline-wash:#33201C;
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 12px 30px rgba(0,0,0,.4);
+  }
+}
+
+:root[data-theme="dark"] {
+  --ground:#17120E; --surface:#211A14; --surface-2:#2B2015;
+  --border:#3B2F1F; --border-strong:#524229;
+  --ink:#F4ECD9; --ink-2:#C1B599; --ink-3:#8E8167;
+  --primary:#F0574E; --primary-hover:#F4655B; --on-primary:#1C1712;
+  --link:#F0736A; --focus-ring:#F4655B;
+  --brand-wash:#331A18; --gold-wash:#33270F;
+  --grow:#83B341;  --grow-wash:#1F2B12;
+  --stable:#D79B3C; --stable-wash:#2F2410;
+  --decline:#E56A5C; --decline-wash:#33201C;
+  --shadow:0 1px 2px rgba(0,0,0,.35), 0 12px 30px rgba(0,0,0,.4);
+}

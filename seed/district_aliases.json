@@ -1,0 +1,476 @@
+[
+  {
+    "district": "Adansi Asokwa",
+    "district_id": 1,
+    "alias": "ADANSI ASOKWA DISTRICT",
+    "normalized_alias": "adansi asokwa district"
+  },
+  {
+    "district": "Adansi Asokwa",
+    "district_id": 1,
+    "alias": "Adansi Asokwa",
+    "normalized_alias": "adansi asokwa"
+  },
+  {
+    "district": "Adansi North",
+    "district_id": 2,
+    "alias": "ADANSI NORTH DISTRICT",
+    "normalized_alias": "adansi north district"
+  },
+  {
+    "district": "Adansi North",
+    "district_id": 2,
+    "alias": "Adansi North",
+    "normalized_alias": "adansi north"
+  },
+  {
+    "district": "Adansi South",
+    "district_id": 3,
+    "alias": "ADANSI SOUTH DISTRICT",
+    "normalized_alias": "adansi south district"
+  },
+  {
+    "district": "Adansi South",
+    "district_id": 3,
+    "alias": "Adansi South",
+    "normalized_alias": "adansi south"
+  },
+  {
+    "district": "Afigya Kwabre North",
+    "district_id": 4,
+    "alias": "AFIGYA KWABRE NORTH",
+    "normalized_alias": "afigya kwabre north"
+  },
+  {
+    "district": "Afigya Kwabre South",
+    "district_id": 5,
+    "alias": "AFIGYA KWABRE SOUTH",
+    "normalized_alias": "afigya kwabre south"
+  },
+  {
+    "district": "Agona",
+    "district_id": 6,
+    "alias": "AGONA",
+    "normalized_alias": "agona"
+  },
+  {
+    "district": "Agona",
+    "district_id": 6,
+    "alias": "Agona East",
+    "normalized_alias": "agona east"
+  },
+  {
+    "district": "Ahafo Ano North",
+    "district_id": 7,
+    "alias": "Ahafo Ano North",
+    "normalized_alias": "ahafo ano north"
+  },
+  {
+    "district": "Ahafo Ano North",
+    "district_id": 7,
+    "alias": "Ahafo Ano North District",
+    "normalized_alias": "ahafo ano north district"
+  },
+  {
+    "district": "Ahafo Ano North",
+    "district_id": 7,
+    "alias": "Ahafo Ano North Municipal Assembly",
+    "normalized_alias": "ahafo ano north municipal assembly"
+  },
+  {
+    "district": "Ahafo Ano South East",
+    "district_id": 8,
+    "alias": "Ahafo Ano South East",
+    "normalized_alias": "ahafo ano south east"
+  },
+  {
+    "district": "Ahafo Ano South East",
+    "district_id": 8,
+    "alias": "Ahafo Ano South East District",
+    "normalized_alias": "ahafo ano south east district"
+  },
+  {
+    "district": "Ahafo Ano South West",
+    "district_id": 9,
+    "alias": "Ahafo Ano South West",
+    "normalized_alias": "ahafo ano south west"
+  },
+  {
+    "district": "Ahafo Ano South West",
+    "district_id": 9,
+    "alias": "Ahafo Ano South West District",
+    "normalized_alias": "ahafo ano south west district"
+  },
+  {
+    "district": "Akrofuom",
+    "district_id": 10,
+    "alias": "AKROFUOM DISTRICT",
+    "normalized_alias": "akrofuom district"
+  },
+  {
+    "district": "Akrofuom",
+    "district_id": 10,
+    "alias": "Akrofuom",
+    "normalized_alias": "akrofuom"
+  },
+  {
+    "district": "Amansie Central",
+    "district_id": 11,
+    "alias": "AMANSIE CENTRAL DISTRICT",
+    "normalized_alias": "amansie central district"
+  },
+  {
+    "district": "Amansie Central",
+    "district_id": 11,
+    "alias": "Amansie Central",
+    "normalized_alias": "amansie central"
+  },
+  {
+    "district": "Amansie South",
+    "district_id": 12,
+    "alias": "AMANSIE SOUTH",
+    "normalized_alias": "amansie south"
+  },
+  {
+    "district": "Amansie West",
+    "district_id": 13,
+    "alias": "AMANSIE WEST",
+    "normalized_alias": "amansie west"
+  },
+  {
+    "district": "Asante Akim Central",
+    "district_id": 14,
+    "alias": "ASANTE AKIM CENTRAL",
+    "normalized_alias": "asante akim central"
+  },
+  {
+    "district": "Asante Akim Central",
+    "district_id": 14,
+    "alias": "Asante Akim Central Municipal Assembly",
+    "normalized_alias": "asante akim central municipal assembly"
+  },
+  {
+    "district": "Asante Akim North",
+    "district_id": 15,
+    "alias": "ASANTE AKIM NORTH",
+    "normalized_alias": "asante akim north"
+  },
+  {
+    "district": "Asante Akim South",
+    "district_id": 16,
+    "alias": "ASANTE AKIM SOUTH",
+    "normalized_alias": "asante akim south"
+  },
+  {
+    "district": "Asante Akim South",
+    "district_id": 16,
+    "alias": "Asante Akim South Municipal Assembly",
+    "normalized_alias": "asante akim south municipal assembly"
+  },
+  {
+    "district": "Asokore Mampong",
+    "district_id": 17,
+    "alias": "ASOKORE MAMPONG",
+    "normalized_alias": "asokore mampong"
+  },
+  {
+    "district": "Asokore Mampong",
+    "district_id": 17,
+    "alias": "Asokore Mampong Municipal Assembly",
+    "normalized_alias": "asokore mampong municipal assembly"
+  },
+  {
+    "district": "Asokwa Municipal",
+    "district_id": 18,
+    "alias": "ASOKWA MUNICIPAL",
+    "normalized_alias": "asokwa municipal"
+  },
+  {
+    "district": "Asokwa Municipal",
+    "district_id": 18,
+    "alias": "Asokwa Municipal Assembly",
+    "normalized_alias": "asokwa municipal assembly"
+  },
+  {
+    "district": "Atwima Kwanwoma",
+    "district_id": 19,
+    "alias": "ATWIMA KWANWOMA",
+    "normalized_alias": "atwima kwanwoma"
+  },
+  {
+    "district": "Atwima Mponua",
+    "district_id": 20,
+    "alias": "ATWIMA MPONUA DISTRICT",
+    "normalized_alias": "atwima mponua district"
+  },
+  {
+    "district": "Atwima Mponua",
+    "district_id": 20,
+    "alias": "Atwima Mponua",
+    "normalized_alias": "atwima mponua"
+  },
+  {
+    "district": "Atwima Nwabiagya Municipal",
+    "district_id": 21,
+    "alias": "ATWIMA NWABIAGYA MUNICIPAL",
+    "normalized_alias": "atwima nwabiagya municipal"
+  },
+  {
+    "district": "Atwima Nwabiagya Municipal",
+    "district_id": 21,
+    "alias": "Atwima Nwabiagya Municipal Assembly",
+    "normalized_alias": "atwima nwabiagya municipal assembly"
+  },
+  {
+    "district": "Atwima Nwabiagya North",
+    "district_id": 22,
+    "alias": "ATWIMA NWABIAGYA NORTH DISTRICT",
+    "normalized_alias": "atwima nwabiagya north district"
+  },
+  {
+    "district": "Atwima Nwabiagya North",
+    "district_id": 22,
+    "alias": "Atwima Nwabiagya North",
+    "normalized_alias": "atwima nwabiagya north"
+  },
+  {
+    "district": "Bekwai Municipal",
+    "district_id": 23,
+    "alias": "BEKWAI MUNICIPAL",
+    "normalized_alias": "bekwai municipal"
+  },
+  {
+    "district": "Bekwai Municipal",
+    "district_id": 23,
+    "alias": "Bekwai Municipal Assembly",
+    "normalized_alias": "bekwai municipal assembly"
+  },
+  {
+    "district": "Bosome Freho",
+    "district_id": 24,
+    "alias": "BOSOME FREHO",
+    "normalized_alias": "bosome freho"
+  },
+  {
+    "district": "Bosomtwe",
+    "district_id": 25,
+    "alias": "BOSOMTWE",
+    "normalized_alias": "bosomtwe"
+  },
+  {
+    "district": "Ejisu Municipal",
+    "district_id": 26,
+    "alias": "EJISU MUNICIPAL ASSEMBLY",
+    "normalized_alias": "ejisu municipal assembly"
+  },
+  {
+    "district": "Ejisu Municipal",
+    "district_id": 26,
+    "alias": "Ejisu Municipal",
+    "normalized_alias": "ejisu municipal"
+  },
+  {
+    "district": "Ejura-Sekyeredumase Municipal",
+    "district_id": 27,
+    "alias": "EJURA-SEKYEREDUMASE",
+    "normalized_alias": "ejura sekyeredumase"
+  },
+  {
+    "district": "Ejura-Sekyeredumase Municipal",
+    "district_id": 27,
+    "alias": "Ejura-Sekyedumase Municipal Assembly",
+    "normalized_alias": "ejura sekyedumase municipal assembly"
+  },
+  {
+    "district": "Ejura-Sekyeredumase Municipal",
+    "district_id": 27,
+    "alias": "Ejura-Sekyeredumase Municipal",
+    "normalized_alias": "ejura sekyeredumase municipal"
+  },
+  {
+    "district": "Juaben Municipal",
+    "district_id": 28,
+    "alias": "JUABEN MUNICIPAL",
+    "normalized_alias": "juaben municipal"
+  },
+  {
+    "district": "Juaben Municipal",
+    "district_id": 28,
+    "alias": "Juaben Municipal Assembly",
+    "normalized_alias": "juaben municipal assembly"
+  },
+  {
+    "district": "Kumasi Metro",
+    "district_id": 29,
+    "alias": "KUMASI METRO",
+    "normalized_alias": "kumasi metro"
+  },
+  {
+    "district": "Kumasi Metro",
+    "district_id": 29,
+    "alias": "Kumasi Metropolitan Assembly",
+    "normalized_alias": "kumasi metropolitan assembly"
+  },
+  {
+    "district": "Kwabre East Municipal",
+    "district_id": 30,
+    "alias": "KWABRE EAST MUNNICIPAL",
+    "normalized_alias": "kwabre east munnicipal"
+  },
+  {
+    "district": "Kwabre East Municipal",
+    "district_id": 30,
+    "alias": "Kwabere East Municipal Assembly",
+    "normalized_alias": "kwabere east municipal assembly"
+  },
+  {
+    "district": "Kwabre East Municipal",
+    "district_id": 30,
+    "alias": "Kwabre East Municipal",
+    "normalized_alias": "kwabre east municipal"
+  },
+  {
+    "district": "Kwabre East Municipal",
+    "district_id": 30,
+    "alias": "Kwabre East Municipal Assembly",
+    "normalized_alias": "kwabre east municipal assembly"
+  },
+  {
+    "district": "Kwadaso Municipal",
+    "district_id": 31,
+    "alias": "KWADASO MUNICIPAL",
+    "normalized_alias": "kwadaso municipal"
+  },
+  {
+    "district": "Kwadaso Municipal",
+    "district_id": 31,
+    "alias": "Kwadaso Municipal Assembly",
+    "normalized_alias": "kwadaso municipal assembly"
+  },
+  {
+    "district": "Mampong",
+    "district_id": 32,
+    "alias": "MAMPONG",
+    "normalized_alias": "mampong"
+  },
+  {
+    "district": "Mampong",
+    "district_id": 32,
+    "alias": "Mampong Municipal Assembly",
+    "normalized_alias": "mampong municipal assembly"
+  },
+  {
+    "district": "Obuasi East Municipal",
+    "district_id": 33,
+    "alias": "OBUASI EAST MUNICIPAL",
+    "normalized_alias": "obuasi east municipal"
+  },
+  {
+    "district": "Obuasi East Municipal",
+    "district_id": 33,
+    "alias": "Obuasi East",
+    "normalized_alias": "obuasi east"
+  },
+  {
+    "district": "Obuasi Municipal",
+    "district_id": 34,
+    "alias": "OBUASI MUNICIPAL",
+    "normalized_alias": "obuasi municipal"
+  },
+  {
+    "district": "Obuasi Municipal",
+    "district_id": 34,
+    "alias": "Obuasi Municipal Assembly",
+    "normalized_alias": "obuasi municipal assembly"
+  },
+  {
+    "district": "Offinso Municipal",
+    "district_id": 35,
+    "alias": "OFFINSO MUNICIPAL",
+    "normalized_alias": "offinso municipal"
+  },
+  {
+    "district": "Offinso Municipal",
+    "district_id": 35,
+    "alias": "Offinso Municipal Assembly",
+    "normalized_alias": "offinso municipal assembly"
+  },
+  {
+    "district": "Offinso North",
+    "district_id": 36,
+    "alias": "OFFINSO NORTH",
+    "normalized_alias": "offinso north"
+  },
+  {
+    "district": "Oforikrom Municipal",
+    "district_id": 37,
+    "alias": "OFORIKROM MUNICIPAL",
+    "normalized_alias": "oforikrom municipal"
+  },
+  {
+    "district": "Oforikrom Municipal",
+    "district_id": 37,
+    "alias": "Oforikrom Municipal Assembly",
+    "normalized_alias": "oforikrom municipal assembly"
+  },
+  {
+    "district": "Old Tafo Municipal",
+    "district_id": 38,
+    "alias": "OLD TAFO MUNICIPAL",
+    "normalized_alias": "old tafo municipal"
+  },
+  {
+    "district": "Old Tafo Municipal",
+    "district_id": 38,
+    "alias": "Old Tafo Municipal Assembly",
+    "normalized_alias": "old tafo municipal assembly"
+  },
+  {
+    "district": "Sekyere Afram Plains",
+    "district_id": 39,
+    "alias": "SEKYERE AFRAM PLAINS",
+    "normalized_alias": "sekyere afram plains"
+  },
+  {
+    "district": "Sekyere Central",
+    "district_id": 40,
+    "alias": "SEKYERE CENTRAL",
+    "normalized_alias": "sekyere central"
+  },
+  {
+    "district": "Sekyere East",
+    "district_id": 41,
+    "alias": "SEKYERE EAST DISTRICT",
+    "normalized_alias": "sekyere east district"
+  },
+  {
+    "district": "Sekyere East",
+    "district_id": 41,
+    "alias": "Sekyere East",
+    "normalized_alias": "sekyere east"
+  },
+  {
+    "district": "Sekyere Kumawu",
+    "district_id": 42,
+    "alias": "SEKYERE KUMAWU",
+    "normalized_alias": "sekyere kumawu"
+  },
+  {
+    "district": "Sekyere South",
+    "district_id": 43,
+    "alias": "SEKYERE SOUTH",
+    "normalized_alias": "sekyere south"
+  },
+  {
+    "district": "Suame Municipal",
+    "district_id": 44,
+    "alias": "SUAME MUNICIPAL",
+    "normalized_alias": "suame municipal"
+  },
+  {
+    "district": "Suame Municipal",
+    "district_id": 44,
+    "alias": "Suame Municipal Assembly",
+    "normalized_alias": "suame municipal assembly"
+  }
+]

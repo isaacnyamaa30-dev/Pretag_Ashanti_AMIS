@@ -1,0 +1,354 @@
+[
+  {
+    "id": 1,
+    "district_name": "Adansi Asokwa",
+    "district_code": "ADAN",
+    "zone": "Adansi",
+    "zone_id": 1,
+    "is_active": true
+  },
+  {
+    "id": 2,
+    "district_name": "Adansi North",
+    "district_code": "ADA2",
+    "zone": "Adansi",
+    "zone_id": 1,
+    "is_active": true
+  },
+  {
+    "id": 3,
+    "district_name": "Adansi South",
+    "district_code": "ADA3",
+    "zone": "Adansi",
+    "zone_id": 1,
+    "is_active": true
+  },
+  {
+    "id": 4,
+    "district_name": "Afigya Kwabre North",
+    "district_code": "AFIG",
+    "zone": "Kwabre",
+    "zone_id": 14,
+    "is_active": true
+  },
+  {
+    "id": 5,
+    "district_name": "Afigya Kwabre South",
+    "district_code": "AFI2",
+    "zone": "Kwabre",
+    "zone_id": 14,
+    "is_active": true
+  },
+  {
+    "id": 6,
+    "district_name": "Agona",
+    "district_code": "AGON",
+    "zone": "Kwabre",
+    "zone_id": 14,
+    "is_active": true
+  },
+  {
+    "id": 7,
+    "district_name": "Ahafo Ano North",
+    "district_code": "AHAF",
+    "zone": "Ahafo Ano",
+    "zone_id": 2,
+    "is_active": true
+  },
+  {
+    "id": 8,
+    "district_name": "Ahafo Ano South East",
+    "district_code": "AHA2",
+    "zone": "Ahafo Ano",
+    "zone_id": 2,
+    "is_active": true
+  },
+  {
+    "id": 9,
+    "district_name": "Ahafo Ano South West",
+    "district_code": "AHA3",
+    "zone": "Ahafo Ano",
+    "zone_id": 2,
+    "is_active": true
+  },
+  {
+    "id": 10,
+    "district_name": "Akrofuom",
+    "district_code": "AKRO",
+    "zone": "Adansi",
+    "zone_id": 1,
+    "is_active": true
+  },
+  {
+    "id": 11,
+    "district_name": "Amansie Central",
+    "district_code": "AMAN",
+    "zone": "Bekwai",
+    "zone_id": 8,
+    "is_active": true
+  },
+  {
+    "id": 12,
+    "district_name": "Amansie South",
+    "district_code": "AMA2",
+    "zone": "Amansie",
+    "zone_id": 3,
+    "is_active": true
+  },
+  {
+    "id": 13,
+    "district_name": "Amansie West",
+    "district_code": "AMA3",
+    "zone": "Amansie",
+    "zone_id": 3,
+    "is_active": true
+  },
+  {
+    "id": 14,
+    "district_name": "Asante Akim Central",
+    "district_code": "ASAN",
+    "zone": "Asante Akim",
+    "zone_id": 4,
+    "is_active": true
+  },
+  {
+    "id": 15,
+    "district_name": "Asante Akim North",
+    "district_code": "ASA2",
+    "zone": "Asante Akim",
+    "zone_id": 4,
+    "is_active": true
+  },
+  {
+    "id": 16,
+    "district_name": "Asante Akim South",
+    "district_code": "ASA3",
+    "zone": "Asante Akim",
+    "zone_id": 4,
+    "is_active": true
+  },
+  {
+    "id": 17,
+    "district_name": "Asokore Mampong",
+    "district_code": "ASOK",
+    "zone": "Asokore Mampong",
+    "zone_id": 5,
+    "is_active": true
+  },
+  {
+    "id": 18,
+    "district_name": "Asokwa Municipal",
+    "district_code": "ASO2",
+    "zone": "Kumasi",
+    "zone_id": 13,
+    "is_active": true
+  },
+  {
+    "id": 19,
+    "district_name": "Atwima Kwanwoma",
+    "district_code": "ATWI",
+    "zone": "Atwima Kwanwoma",
+    "zone_id": 6,
+    "is_active": true
+  },
+  {
+    "id": 20,
+    "district_name": "Atwima Mponua",
+    "district_code": "ATW2",
+    "zone": "Atwima Nwabiagya",
+    "zone_id": 7,
+    "is_active": true
+  },
+  {
+    "id": 21,
+    "district_name": "Atwima Nwabiagya Municipal",
+    "district_code": "ATW3",
+    "zone": "Atwima Nwabiagya",
+    "zone_id": 7,
+    "is_active": true
+  },
+  {
+    "id": 22,
+    "district_name": "Atwima Nwabiagya North",
+    "district_code": "ATW4",
+    "zone": "Atwima Nwabiagya",
+    "zone_id": 7,
+    "is_active": true
+  },
+  {
+    "id": 23,
+    "district_name": "Bekwai Municipal",
+    "district_code": "BEKW",
+    "zone": "Bekwai",
+    "zone_id": 8,
+    "is_active": true
+  },
+  {
+    "id": 24,
+    "district_name": "Bosome Freho",
+    "district_code": "BOSO",
+    "zone": "Bosome Freho",
+    "zone_id": 9,
+    "is_active": true
+  },
+  {
+    "id": 25,
+    "district_name": "Bosomtwe",
+    "district_code": "BOS2",
+    "zone": "Bosomtwe",
+    "zone_id": 10,
+    "is_active": true
+  },
+  {
+    "id": 26,
+    "district_name": "Ejisu Municipal",
+    "district_code": "EJIS",
+    "zone": "Ejisu",
+    "zone_id": 11,
+    "is_active": true
+  },
+  {
+    "id": 27,
+    "district_name": "Ejura-Sekyeredumase Municipal",
+    "district_code": "EJUR",
+    "zone": "Ejura",
+    "zone_id": 12,
+    "is_active": true
+  },
+  {
+    "id": 28,
+    "district_name": "Juaben Municipal",
+    "district_code": "JUAB",
+    "zone": "Ejisu",
+    "zone_id": 11,
+    "is_active": true
+  },
+  {
+    "id": 29,
+    "district_name": "Kumasi Metro",
+    "district_code": "KUMA",
+    "zone": "Kumasi",
+    "zone_id": 13,
+    "is_active": true
+  },
+  {
+    "id": 30,
+    "district_name": "Kwabre East Municipal",
+    "district_code": "KWAB",
+    "zone": "Kwabre",
+    "zone_id": 14,
+    "is_active": true
+  },
+  {
+    "id": 31,
+    "district_name": "Kwadaso Municipal",
+    "district_code": "KWAD",
+    "zone": "Kumasi",
+    "zone_id": 13,
+    "is_active": true
+  },
+  {
+    "id": 32,
+    "district_name": "Mampong",
+    "district_code": "MAMP",
+    "zone": "Mampong",
+    "zone_id": 15,
+    "is_active": true
+  },
+  {
+    "id": 33,
+    "district_name": "Obuasi East Municipal",
+    "district_code": "OBUA",
+    "zone": "Adansi",
+    "zone_id": 1,
+    "is_active": true
+  },
+  {
+    "id": 34,
+    "district_name": "Obuasi Municipal",
+    "district_code": "OBU2",
+    "zone": "Adansi",
+    "zone_id": 1,
+    "is_active": true
+  },
+  {
+    "id": 35,
+    "district_name": "Offinso Municipal",
+    "district_code": "OFFI",
+    "zone": "Offinso",
+    "zone_id": 16,
+    "is_active": true
+  },
+  {
+    "id": 36,
+    "district_name": "Offinso North",
+    "district_code": "OFF2",
+    "zone": "Offinso",
+    "zone_id": 16,
+    "is_active": true
+  },
+  {
+    "id": 37,
+    "district_name": "Oforikrom Municipal",
+    "district_code": "OFOR",
+    "zone": "Kumasi",
+    "zone_id": 13,
+    "is_active": true
+  },
+  {
+    "id": 38,
+    "district_name": "Old Tafo Municipal",
+    "district_code": "OLDT",
+    "zone": "Kumasi",
+    "zone_id": 13,
+    "is_active": true
+  },
+  {
+    "id": 39,
+    "district_name": "Sekyere Afram Plains",
+    "district_code": "SEKY",
+    "zone": "Sekyere Kumawu",
+    "zone_id": 17,
+    "is_active": true
+  },
+  {
+    "id": 40,
+    "district_name": "Sekyere Central",
+    "district_code": "SEK2",
+    "zone": "Sekyere South & Central",
+    "zone_id": 18,
+    "is_active": true
+  },
+  {
+    "id": 41,
+    "district_name": "Sekyere East",
+    "district_code": "SEK3",
+    "zone": "Ejisu",
+    "zone_id": 11,
+    "is_active": true
+  },
+  {
+    "id": 42,
+    "district_name": "Sekyere Kumawu",
+    "district_code": "SEK4",
+    "zone": "Sekyere Kumawu",
+    "zone_id": 17,
+    "is_active": true
+  },
+  {
+    "id": 43,
+    "district_name": "Sekyere South",
+    "district_code": "SEK5",
+    "zone": "Sekyere South & Central",
+    "zone_id": 18,
+    "is_active": true
+  },
+  {
+    "id": 44,
+    "district_name": "Suame Municipal",
+    "district_code": "SUAM",
+    "zone": "Kumasi",
+    "zone_id": 13,
+    "is_active": true
+  }
+]
