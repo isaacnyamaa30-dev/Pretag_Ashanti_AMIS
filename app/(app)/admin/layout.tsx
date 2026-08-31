@@ -6,6 +6,7 @@ const TABS = [
   { href: "/admin/districts", label: "Districts" },
   { href: "/admin/aliases", label: "District Aliases" },
   { href: "/admin/users", label: "Users" },
+  { href: "/admin/targets", label: "Targets" },
   { href: "/admin/settings", label: "Settings" },
 ];
 

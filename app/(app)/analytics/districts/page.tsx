@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { PageHeader, Card } from "@/components/ui";
 import { getImportedPeriods, compareDistricts, periodSummary } from "@/lib/analytics";
 import { createClient } from "@/lib/supabase/server";
@@ -86,7 +87,9 @@ export default async function DistrictAnalysisPage() {
           <tbody>
             {rows.map((r) => (
               <tr key={r.district_id} className="border-t border-border hover:bg-surface-2">
-                <td className="px-3 py-2">{r.name}</td>
+                <td className="px-3 py-2">
+                  <Link href={`/analytics/districts/${r.district_id}`} className="underline">{r.name}</Link>
+                </td>
                 <td className="px-3 py-2 text-ink-3">{r.zone_name}</td>
                 <td className="px-3 py-2 text-right tabular-nums">{r.previous}</td>
                 <td className="px-3 py-2 text-right tabular-nums">{r.current}</td>

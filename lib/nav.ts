@@ -32,6 +32,10 @@ export const NAV: NavGroup[] = [
     ],
   },
   {
+    label: "Assistant",
+    items: [{ label: "Ask", href: "/assistant", ready: true }],
+  },
+  {
     label: "Members",
     items: [{ label: "Search", href: "/members", ready: true }],
   },
@@ -50,6 +54,7 @@ export const NAV: NavGroup[] = [
       { label: "Districts", href: "/admin/districts", ready: true },
       { label: "District Aliases", href: "/admin/aliases", ready: true },
       { label: "Users", href: "/admin/users", ready: true },
+      { label: "Targets", href: "/admin/targets", ready: true },
       { label: "Settings", href: "/admin/settings", ready: true },
     ],
   },

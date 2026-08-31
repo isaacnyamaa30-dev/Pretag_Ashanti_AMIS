@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
 import { PageHeader, Card, StatTile } from "@/components/ui";
 import {
   getImportedPeriods,
@@ -39,9 +40,16 @@ export default async function DashboardPage() {
   const previous = periods[1];
   const summary = await periodSummary(latest.id);
 
-  const [compare, trend] = await Promise.all([
+  const supabase = createClient();
+  const [compare, trend, { data: target }] = await Promise.all([
     previous ? comparePeriods(previous.id, latest.id) : Promise.resolve([]),
     getMembershipTrend(),
+    supabase
+      .from("membership_targets")
+      .select("target_members, year")
+      .is("zone_id", null)
+      .eq("year", new Date().getFullYear())
+      .maybeSingle(),
   ]);
   const region = compare.find((r) => r.level === "region");
   const zoneRows = compare.filter((r) => r.level === "zone");
@@ -94,6 +102,36 @@ export default async function DashboardPage() {
             +{region.added} added &middot; -{region.missing} missing &middot; retention {region.retention_pct}%
           </span>
         </div>
+      )}
+
+      {target && (
+        <Card className="mb-4">
+          <div className="flex items-baseline justify-between flex-wrap gap-2 mb-2">
+            <h3 className="font-display text-sm uppercase tracking-tight">{target.year} target</h3>
+            <span className="font-mono text-xs text-ink-3">
+              {summary.region.toLocaleString()} of {target.target_members.toLocaleString()}
+            </span>
+          </div>
+          {(() => {
+            const p = Math.min(100, (summary.region / target.target_members) * 100);
+            const done = summary.region >= target.target_members;
+            return (
+              <>
+                <div className="h-3 rounded-full bg-surface-2 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${done ? "bg-grow" : "bg-primary"}`}
+                    style={{ width: `${p}%` }}
+                  />
+                </div>
+                <p className="text-[11px] font-mono text-ink-3 mt-1.5">
+                  {done
+                    ? "Target reached."
+                    : `${(target.target_members - summary.region).toLocaleString()} to go (${p.toFixed(1)}%).`}
+                </p>
+              </>
+            );
+          })()}
+        </Card>
       )}
 
       {trend.length >= 2 && (

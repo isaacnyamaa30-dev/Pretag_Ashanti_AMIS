@@ -7,7 +7,7 @@ export const metadata = { title: "Sign in - PRETAG AMIS" };
 export default function LoginPage() {
   return (
     <main className="login-bg relative min-h-screen overflow-hidden grid place-items-center px-4 py-12">
-      {/* deep layered backdrop */}
+      {/* warm layered backdrop */}
       <div className="login-glow" aria-hidden />
       <div className="login-grain" aria-hidden />
       <Image
@@ -25,16 +25,16 @@ export default function LoginPage() {
           <Image
             src="/assets/pretag-emblem.jpg"
             alt="PRETAG Ashanti"
-            width={72}
-            height={72}
+            width={80}
+            height={80}
             priority
-            className="rounded-full ring-2 ring-white/20 shadow-lg"
+            className="rounded-full ring-2 ring-white/40 shadow-xl"
           />
-          <div>
-            <h1 className="font-display text-white text-lg uppercase tracking-wide leading-tight">
+          <div style={{ textShadow: "0 1px 12px rgba(80,10,0,.45)" }}>
+            <h1 className="font-display text-white text-xl uppercase tracking-wide leading-tight">
               PRETAG Ashanti
             </h1>
-            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-white/55 mt-1">
+            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-[#FFE7BE] mt-1">
               Membership Intelligence
             </p>
           </div>
@@ -48,10 +48,13 @@ export default function LoginPage() {
           </Suspense>
         </div>
 
-        <p className="text-center text-[11px] font-mono uppercase tracking-[0.18em] text-white/40 mt-6">
+        <p
+          className="text-center text-xs font-mono uppercase tracking-[0.2em] text-[#FFEDCB] mt-6"
+          style={{ textShadow: "0 1px 10px rgba(80,10,0,.5)" }}
+        >
           Quality Education, Our Concern
         </p>
-        <p className="text-center text-[10px] font-mono text-white/30 mt-3">
+        <p className="text-center text-[10px] font-mono text-white/60 mt-3">
           &copy; {new Date().getFullYear()} Isaac Nyamaa Boadi &middot; all rights reserved
         </p>
       </div>
