@@ -3,6 +3,9 @@
 Turns the monthly Ashanti Regional R20 into a permanent membership database with
 zone/district classification, month-on-month analytics, and automated R20 exports.
 
+**Live:** https://pretag-ashanti-amis.vercel.app (Vercel · Supabase project `glhbpfsqrfvfnioimaep`)
+Update with `npx vercel deploy --prod` from this folder.
+
 ## Repository layout
 
 | Path | What |
