@@ -34,7 +34,7 @@ Update with `npx vercel deploy --prod` from this folder.
 | 6 - Exports | **done** - Regional / per-zone / all-zones ZIP / comparison workbook; archive browser |
 | 7 - Reporting & summaries (v2) | **done** - executive-summary text, printable Regional Report, comparison export, projection |
 | 8 - Member intelligence & PWA (v2) | **done** - member search + history, movement reasons, PWA install, data-quality score, zone scorecard, notifications |
-| V3 | AI assistant, email, scheduled summaries, targets, multi-region - see the plan |
+| V3 | **mostly done** - AI assistant (needs key), membership targets, school drill-down, monthly reminder; email + multi-region pending |
 
 **Go-live tooling:** Settings has a Super-Admin "Reset membership data" action
 that wipes all history and stored files but keeps the structure.
