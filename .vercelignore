@@ -1,0 +1,8 @@
+# Not needed at runtime - keeps the deployment bundle small
+analyzer/
+docs/
+Logo/
+R20 JULY/
+R20 AUGUST/
+*.xlsx
+seed/generate.py
