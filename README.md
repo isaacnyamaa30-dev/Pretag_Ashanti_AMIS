@@ -30,9 +30,11 @@ Update with `npx vercel deploy --prod` from this folder.
 | 2 - R20 importer | **done** - upload -> validation (§53) -> unmapped resolver -> live zone/district classification |
 | 3 - Approve & snapshot | **done** - transactional import to `members` + immutable `membership_snapshots`; period locking |
 | 4 - Analytics engine | **done** - region + zone comparison, transfer logic, status bands; Regional / Zone / Compare pages; live dashboard |
-| 5 - Executive dashboard | **mostly done** - KPIs, trend + zone charts, Membership Movement (member lists), zone drill-down |
-| 6 - Exports | **mostly done** - Regional + per-zone workbooks + all-zones ZIP; archive browser still to add |
-| 7-8 | Version 2 - see the plan |
+| 5 - Executive dashboard | **done** - KPIs, trend + zone charts, movement lists, drill-downs |
+| 6 - Exports | **done** - Regional / per-zone / all-zones ZIP / comparison workbook; archive browser |
+| 7 - Reporting & summaries (v2) | **done** - executive-summary text, printable Regional Report, comparison export, projection |
+| 8 - Member intelligence & PWA (v2) | **done** - member search + history, movement reasons, PWA install, data-quality score, zone scorecard, notifications |
+| V3 | AI assistant, email, scheduled summaries, targets, multi-region - see the plan |
 
 **Go-live tooling:** Settings has a Super-Admin "Reset membership data" action
 that wipes all history and stored files but keeps the structure.
