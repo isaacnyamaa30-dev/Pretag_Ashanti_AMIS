@@ -31,3 +31,6 @@ docs/comparison_*.json
 /Logo/
 
 .DS_Store
+
+.vercel
+.env*
