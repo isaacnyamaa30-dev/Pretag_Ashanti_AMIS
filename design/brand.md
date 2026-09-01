@@ -9,7 +9,9 @@ The visual identity comes from the PRETAG Ashanti logo
 |---|---|---|---|---|
 | `--pretag-red` / `--primary` | `#C4161C` | `#F0574E` | the ring | header bar, primary buttons, links, section rules, active nav |
 | `--pretag-red-bright` | `#E11B1B` | `#F4655B` | the ring (exact) | focus rings, small accents |
-| `--pretag-yellow` / `--surface-2` | `#F7EFD5` | `#2B2015` | the field | washes, table zebra, hover |
+| `--surface` (cards, bars) | `#F6E9C0` | `#211A14` | the logo's gold field, deepened | every card, the sidebar, the top bar, table bodies, the login card |
+| `--ground` (page behind cards) | `#E8D8A6` | `#17120E` | the field, deeper still | app background, form inputs (recessed look) |
+| `--surface-2` (washes) | `#EFE0B2` | `#2B2015` | between surface and ground | table zebra, hover, inactive tabs |
 | `--pretag-gold` | `#B07A12` | `#E0A63E` | the hawk's plumage | secondary accent, chart series, `stat` top rule alt |
 | `--pretag-olive` | `#5E6B18` | `#9EAB4C` | the pen shaft | tertiary accent |
 | `--pretag-black` / `--ink` | `#1C1712` | `#F4ECD9` | the heading text | body text |

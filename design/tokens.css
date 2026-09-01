@@ -12,23 +12,23 @@
   --pretag-black:      #1C1712;   /* warm near-black - the heading ink */
 
   /* ---- surfaces & text (light) ---- */
-  --ground:        #EDE1C4;
-  --surface:       #FFFFFF;
-  --surface-2:     #F6EDD6;
-  --border:        #E2D5B4;
-  --border-strong: #CBBC92;
+  --ground:        #E8D8A6;
+  --surface:       #F6E9C0;
+  --surface-2:     #EFE0B2;
+  --border:        #DBC994;
+  --border-strong: #C6B274;
   --ink:           #1C1712;
-  --ink-2:         #574E40;
-  --ink-3:         #8A7F69;
+  --ink-2:         #544A3A;
+  --ink-3:         #786D54;
 
   /* ---- role tokens ---- */
   --primary:        var(--pretag-red);
   --primary-hover:  #A9121A;
   --on-primary:     #FFFFFF;
-  --link:           #B0141A;
+  --link:           #A5121A;
   --focus-ring:     var(--pretag-red-bright);
-  --brand-wash:     #FBE7E0;
-  --gold-wash:      #F6E9C2;
+  --brand-wash:     #F7D8CD;
+  --gold-wash:      #F0DFA8;
 
   /* ---- data semantics (per build-plan section 27/60) ---- */
   --grow:          #4E7A1C;  --grow-wash:    #E9EFD7;

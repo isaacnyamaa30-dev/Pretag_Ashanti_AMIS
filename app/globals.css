@@ -15,22 +15,22 @@
   --pretag-olive: #5e6b18;
   --pretag-black: #1c1712;
 
-  --ground: #ede1c4;
-  --surface: #ffffff;
-  --surface-2: #f6edd6;
-  --border: #e2d5b4;
-  --border-strong: #cbbc92;
+  --ground: #e8d8a6;
+  --surface: #f6e9c0;
+  --surface-2: #efe0b2;
+  --border: #dbc994;
+  --border-strong: #c6b274;
   --ink: #1c1712;
-  --ink-2: #574e40;
-  --ink-3: #8a7f69;
+  --ink-2: #544a3a;
+  --ink-3: #786d54;
 
   --primary: var(--pretag-red);
   --primary-hover: #a9121a;
   --on-primary: #ffffff;
-  --link: #b0141a;
+  --link: #a5121a;
   --focus-ring: var(--pretag-red-bright);
-  --brand-wash: #fbe7e0;
-  --gold-wash: #f6e9c2;
+  --brand-wash: #f7d8cd;
+  --gold-wash: #f0dfa8;
 
   --grow: #4e7a1c;
   --grow-wash: #e9efd7;
