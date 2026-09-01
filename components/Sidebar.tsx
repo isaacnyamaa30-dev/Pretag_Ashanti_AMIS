@@ -12,8 +12,8 @@ export function Sidebar() {
       <div className="flex items-center gap-3 px-5 py-4 border-b border-border-strong bg-surface-2/60">
         <Logo size={36} />
         <div className="leading-tight">
-          <div className="font-display text-base font-bold uppercase tracking-tight">PRETAG AMIS</div>
-          <div className="text-[10px] font-mono text-ink-3">Ashanti Region</div>
+          <div className="font-display text-lg font-extrabold uppercase tracking-tight text-ink">PRETAG AMIS</div>
+          <div className="text-xs font-mono font-bold uppercase tracking-wide text-ink mt-0.5">Ashanti Region</div>
         </div>
       </div>
 
