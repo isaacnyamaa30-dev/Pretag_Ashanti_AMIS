@@ -57,7 +57,7 @@ python -m analyzer compare "R20_Ashanti-6 July.xlsx" "Ashanti-4 August.xlsx" -o 
 
 ## Copyright
 
-Copyright &copy; 2026 **Isaac Nyamaa Boadi**. All rights reserved.
+Copyright &copy; 2026 **Isaac Nyamaa Boadi**. All Rights Reserved.
 Developed by Isaac Nyamaa Boadi for PRETAG Ashanti. See [`LICENSE`](LICENSE) -
 the developer retains ownership and the right to license the system to other
 PRETAG regions and to PRETAG national.

@@ -49,7 +49,7 @@ export function Sidebar() {
       </nav>
       <div className="border-t border-border-strong px-4 py-3 text-xs font-mono font-bold text-ink leading-relaxed bg-surface-2/50">
         Developed by Isaac Nyamaa Boadi
-        <br />&copy; {new Date().getFullYear()} &middot; all rights reserved
+        <br />&copy; {new Date().getFullYear()} &middot; All Rights Reserved
         <div className="mt-2 pt-2 border-t border-border">
           <span className="uppercase tracking-wide text-ink-2">Enquiries &amp; services</span>
           <br />

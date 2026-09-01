@@ -73,7 +73,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               isaacnyamaa30@gmail.com
             </a>
           </span>
-          <span>&copy; {new Date().getFullYear()} Isaac Nyamaa Boadi &mdash; all rights reserved</span>
+          <span>&copy; {new Date().getFullYear()} Isaac Nyamaa Boadi &mdash; All Rights Reserved</span>
         </footer>
       </div>
     </div>

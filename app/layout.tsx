@@ -1,6 +1,6 @@
 /*
  * PRETAG Ashanti Membership Intelligence System (AMIS)
- * Copyright (c) 2026 Isaac Nyamaa Boadi. All rights reserved.
+ * Copyright (c) 2026 Isaac Nyamaa Boadi. All Rights Reserved.
  * Developed by Isaac Nyamaa Boadi for PRETAG Ashanti. See /LICENSE.
  */
 import type { Metadata, Viewport } from "next";
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   creator: "Isaac Nyamaa Boadi",
   publisher: "Isaac Nyamaa Boadi",
   other: {
-    copyright: "Copyright (c) 2026 Isaac Nyamaa Boadi. All rights reserved.",
+    copyright: "Copyright (c) 2026 Isaac Nyamaa Boadi. All Rights Reserved.",
   },
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "PRETAG AMIS", statusBarStyle: "black-translucent" },

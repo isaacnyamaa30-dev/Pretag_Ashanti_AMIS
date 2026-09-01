@@ -5,7 +5,7 @@
   "description": "PRETAG Ashanti Membership Intelligence System",
   "author": "Isaac Nyamaa Boadi <isaacnyamaa30@gmail.com>",
   "license": "UNLICENSED",
-  "copyright": "Copyright (c) 2026 Isaac Nyamaa Boadi. All rights reserved.",
+  "copyright": "Copyright (c) 2026 Isaac Nyamaa Boadi. All Rights Reserved.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
