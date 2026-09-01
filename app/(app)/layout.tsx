@@ -59,7 +59,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </header>
         <main className="flex-1 p-6 md:p-8 max-w-6xl w-full">{children}</main>
-        <footer className="border-t border-border-strong px-6 py-3 text-xs font-mono font-bold text-ink-3 flex flex-wrap gap-x-4 gap-y-1 justify-between">
+        <footer className="border-t border-border-strong px-6 py-3 text-xs font-mono font-bold text-ink flex flex-wrap gap-x-4 gap-y-1 justify-between">
           <span>PRETAG Ashanti Membership Intelligence System</span>
           <span>&copy; {new Date().getFullYear()} Isaac Nyamaa Boadi &mdash; all rights reserved</span>
         </footer>

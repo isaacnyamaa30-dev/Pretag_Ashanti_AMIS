@@ -39,14 +39,19 @@ export default async function RegionalPage() {
         </div>
         <Card>
           <h3 className="font-display text-sm uppercase tracking-tight mb-3">Members by zone - {latest.label}</h3>
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1.5">
             {summary.zones.map((z) => {
               const max = summary.zones[0]?.members || 1;
               return (
                 <div key={z.zoneId} className="flex items-center gap-3 text-sm font-mono">
-                  <span className="w-44 truncate">{z.name}</span>
-                  <span className="h-2 rounded-full bg-primary/60" style={{ width: `${(z.members / max) * 240}px` }} />
-                  <span className="tabular-nums text-ink-2">{z.members}</span>
+                  <span className="w-40 shrink-0 truncate text-ink-2">{z.name}</span>
+                  <span className="flex-1 h-2.5 rounded-full bg-surface-2 overflow-hidden">
+                    <span
+                      className="block h-full rounded-full bg-primary/70"
+                      style={{ width: `${Math.max(3, (z.members / max) * 100)}%` }}
+                    />
+                  </span>
+                  <span className="w-14 shrink-0 text-right tabular-nums text-ink">{z.members}</span>
                 </div>
               );
             })}

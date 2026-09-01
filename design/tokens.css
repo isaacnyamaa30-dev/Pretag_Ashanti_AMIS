@@ -17,9 +17,9 @@
   --surface-2:     #EFE0B2;
   --border:        #DBC994;
   --border-strong: #C6B274;
-  --ink:           #1C1712;
-  --ink-2:         #544A3A;
-  --ink-3:         #786D54;
+  --ink:           #14100C;
+  --ink-2:         #14100C;
+  --ink-3:         #14100C;
 
   /* ---- role tokens ---- */
   --primary:        var(--pretag-red);

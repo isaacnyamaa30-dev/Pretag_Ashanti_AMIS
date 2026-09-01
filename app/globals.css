@@ -20,9 +20,11 @@
   --surface-2: #efe0b2;
   --border: #dbc994;
   --border-strong: #c6b274;
-  --ink: #1c1712;
-  --ink-2: #544a3a;
-  --ink-3: #786d54;
+  /* all body / label / caption text is black on light mode (per request);
+     hierarchy is carried by weight and size, not colour */
+  --ink: #14100c;
+  --ink-2: #14100c;
+  --ink-3: #14100c;
 
   --primary: var(--pretag-red);
   --primary-hover: #a9121a;

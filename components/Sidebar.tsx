@@ -47,8 +47,8 @@ export function Sidebar() {
           </div>
         ))}
       </nav>
-      <div className="border-t border-border-strong px-4 py-3 text-[10px] font-mono text-ink-3 leading-relaxed bg-surface-2/50">
-        Developed by <span className="text-ink-2">Isaac Nyamaa Boadi</span>
+      <div className="border-t border-border-strong px-4 py-3 text-[11px] font-mono font-bold text-ink leading-relaxed bg-surface-2/50">
+        Developed by Isaac Nyamaa Boadi
         <br />&copy; {new Date().getFullYear()} &middot; all rights reserved
       </div>
     </aside>
