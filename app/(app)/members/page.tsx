@@ -18,14 +18,27 @@ export default async function MembersPage({ searchParams }: { searchParams: { q?
   }[] = [];
 
   if (q.length >= 2) {
-    const numeric = /^\d+$/.test(q);
     let query = supabase
       .from("members")
-      .select("id, employee_no, current_name, current_management_unit, zones:current_zone_id(zone_name), districts:current_district_id(district_name)")
+      .select(
+        "id, employee_no, current_name, current_management_unit, zones:current_zone_id(zone_name), districts:current_district_id(district_name)",
+      )
       .limit(50);
-    query = numeric
-      ? query.like("employee_no", `${q}%`)
-      : query.ilike("current_name", `%${q}%`);
+
+    if (/^\d+$/.test(q)) {
+      // pure digits -> employee-number prefix
+      query = query.like("employee_no", `${q}%`);
+    } else {
+      // name -> every word must appear somewhere in the stored name, in any
+      // order. Stored names carry titles ("Mr.") and middle names
+      // ("Richard Owusu Asumadu"), so an exact-phrase match misses most people.
+      const words = q.split(/[\s.,]+/).filter((w) => w.length >= 2);
+      for (const w of words) {
+        query = query.ilike("current_name", `%${w}%`);
+      }
+      if (words.length === 0) query = query.ilike("current_name", `%${q}%`);
+    }
+
     const { data } = await query.order("current_name");
     results = (data ?? []) as typeof results;
   }
@@ -34,7 +47,7 @@ export default async function MembersPage({ searchParams }: { searchParams: { q?
     <>
       <PageHeader
         title="Member Search"
-        sub="Find a member by employee number (fastest) or by name."
+        sub="Search by employee number (fastest), or by any part of the name - first name, surname, or both, in any order. Titles and middle names in the record are ignored."
       />
 
       <Card className="mb-6">
