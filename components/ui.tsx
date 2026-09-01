@@ -11,7 +11,7 @@ export function PageHeader({ title, sub }: { title: string; sub?: string }) {
 
 export function Card({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`bg-surface border border-border rounded shadow-card p-5 ${className}`}>
+    <div className={`card bg-surface border rounded p-5 ${className}`}>
       {children}
     </div>
   );
@@ -19,7 +19,7 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
 
 export function StatTile({ value, label }: { value: ReactNode; label: string }) {
   return (
-    <div className="bg-surface border border-border rounded p-4 border-t-[3px] border-t-primary">
+    <div className="stat-3d p-4">
       <div className="font-display text-2xl font-extrabold tabular-nums leading-none">{value}</div>
       <div className="text-xs font-mono text-ink-3 mt-1.5">{label}</div>
     </div>
@@ -45,9 +45,9 @@ export function StatusPill({ status }: { status: keyof typeof STATUS }) {
 
 export function Table({ head, children }: { head: ReactNode; children: ReactNode }) {
   return (
-    <div className="overflow-x-auto border border-border rounded">
+    <div className="card overflow-x-auto border rounded p-0">
       <table className="w-full text-sm font-mono min-w-[520px]">
-        <thead className="bg-primary text-on-primary">
+        <thead className="head-3d bg-primary text-on-primary">
           <tr>{head}</tr>
         </thead>
         <tbody>{children}</tbody>

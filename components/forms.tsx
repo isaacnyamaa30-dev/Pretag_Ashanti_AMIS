@@ -12,11 +12,8 @@ export function SubmitButton({
   form?: string;
 }) {
   const { pending } = useFormStatus();
-  const base = "font-mono text-xs uppercase tracking-wide rounded px-3 py-1.5 disabled:opacity-50";
-  const style =
-    variant === "primary"
-      ? "bg-primary text-on-primary hover:bg-primary-hover"
-      : "border border-border-strong text-ink-2 hover:border-primary hover:text-primary";
+  const base = "font-mono text-xs uppercase tracking-wide px-3.5 py-2 disabled:cursor-not-allowed";
+  const style = variant === "primary" ? "btn-3d" : "btn-ghost-3d text-ink-2 hover:text-primary";
   return (
     <button type="submit" form={form} disabled={pending} className={`${base} ${style}`}>
       {pending ? "Working..." : children}

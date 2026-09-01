@@ -52,7 +52,7 @@ export default async function MonthlyComparePage({
               ))}
             </select>
           </label>
-          <button className="font-mono text-xs uppercase tracking-wide bg-primary text-on-primary rounded px-3 py-1.5">
+          <button className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-1.5">
             Compare
           </button>
         </form>

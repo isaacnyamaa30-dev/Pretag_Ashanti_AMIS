@@ -45,7 +45,7 @@ export default async function MembersPage({ searchParams }: { searchParams: { q?
             placeholder="Employee number or name"
             className="grow border border-border-strong rounded bg-ground px-3 py-2 text-sm outline-none focus:border-primary"
           />
-          <button className="font-mono text-xs uppercase tracking-wide bg-primary text-on-primary rounded px-4">
+          <button className="font-mono text-xs uppercase tracking-wide btn-3d px-4">
             Search
           </button>
         </form>

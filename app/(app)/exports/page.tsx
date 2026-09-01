@@ -54,7 +54,7 @@ export default async function ExportsPage({ searchParams }: { searchParams: { pe
         <Card>
           <h3 className="font-display text-sm uppercase tracking-tight mb-2">Regional</h3>
           <p className="text-sm text-ink-2 mb-3">One workbook, every member for {period.label}.</p>
-          <a href={link("regional")} className="inline-block font-mono text-xs uppercase tracking-wide bg-primary text-on-primary rounded px-3 py-2">
+          <a href={link("regional")} className="inline-block font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2">
             Download Regional R20
           </a>
         </Card>
@@ -63,7 +63,7 @@ export default async function ExportsPage({ searchParams }: { searchParams: { pe
           <p className="text-sm text-ink-2 mb-3">
             A ZIP with a workbook per zone (one sheet per district) plus the Regional file.
           </p>
-          <a href={link("zip")} className="inline-block font-mono text-xs uppercase tracking-wide bg-primary text-on-primary rounded px-3 py-2">
+          <a href={link("zip")} className="inline-block font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2">
             Download all zones (ZIP)
           </a>
         </Card>
@@ -89,7 +89,7 @@ export default async function ExportsPage({ searchParams }: { searchParams: { pe
                 {periods.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
               </select>
             </label>
-            <button className="font-mono text-xs uppercase tracking-wide bg-primary text-on-primary rounded px-3 py-2">
+            <button className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2">
               Download comparison
             </button>
           </form>

@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { requireUser } from "@/lib/auth";
+import { Tabs } from "@/components/Tabs";
 
 const TABS = [
   { href: "/analytics/regional", label: "Regional" },
@@ -14,17 +14,7 @@ export default async function AnalyticsLayout({ children }: { children: React.Re
   await requireUser();
   return (
     <div>
-      <nav className="flex flex-wrap gap-1 border-b border-border mb-6">
-        {TABS.map((t) => (
-          <Link
-            key={t.href}
-            href={t.href}
-            className="px-3 py-2 text-sm font-mono text-ink-2 hover:text-ink border-b-2 border-transparent hover:border-border-strong -mb-px"
-          >
-            {t.label}
-          </Link>
-        ))}
-      </nav>
+      <Tabs tabs={TABS} />
       {children}
     </div>
   );
