@@ -106,6 +106,13 @@ export default async function DistrictAnalysisPage() {
           </tbody>
         </table>
       </div>
+      <p className="text-xs text-ink-2 mt-3 max-w-3xl">
+        <span className="font-bold text-grow">Added</span> = new to the R20 &middot;{" "}
+        <span className="font-bold text-decline">Missing</span> = dropped out of the R20 &middot;{" "}
+        <span className="font-bold">In / Out</span> = moved between districts (still in the region) &middot;{" "}
+        <span className="font-bold">Net</span> = Current &minus; Previous = Added + In &minus; Missing &minus; Out
+        (a district can have a positive Added and still a negative Net).
+      </p>
     </>
   );
 }
