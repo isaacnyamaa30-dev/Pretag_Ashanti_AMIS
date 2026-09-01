@@ -12,11 +12,11 @@
   --pretag-black:      #1C1712;   /* warm near-black - the heading ink */
 
   /* ---- surfaces & text (light) ---- */
-  --ground:        #FCF9EE;
+  --ground:        #EDE1C4;
   --surface:       #FFFFFF;
-  --surface-2:     #F7EFD5;
-  --border:        #E9DFC1;
-  --border-strong: #D5C89D;
+  --surface-2:     #F6EDD6;
+  --border:        #E2D5B4;
+  --border-strong: #CBBC92;
   --ink:           #1C1712;
   --ink-2:         #574E40;
   --ink-3:         #8A7F69;

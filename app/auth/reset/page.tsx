@@ -72,7 +72,7 @@ export default function ResetPasswordPage() {
           {ready === "ok" && !done && (
             <form onSubmit={submit} className="flex flex-col gap-4">
               <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-mono uppercase tracking-wide text-ink-2">New password</span>
+                <span className="text-xs font-mono font-bold uppercase tracking-wide text-ink-2">New password</span>
                 <input
                   type="password"
                   required
@@ -83,7 +83,7 @@ export default function ResetPasswordPage() {
                 />
               </label>
               <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-mono uppercase tracking-wide text-ink-2">Confirm new password</span>
+                <span className="text-xs font-mono font-bold uppercase tracking-wide text-ink-2">Confirm new password</span>
                 <input
                   type="password"
                   required
@@ -101,7 +101,7 @@ export default function ResetPasswordPage() {
               <button
                 type="submit"
                 disabled={busy}
-                className="mt-1 bg-primary hover:bg-primary-hover text-on-primary font-display uppercase tracking-wide text-sm rounded py-2.5 disabled:opacity-60"
+                className="mt-1 btn-3d font-display uppercase tracking-wide text-[15px] font-extrabold py-3 disabled:opacity-60"
               >
                 {busy ? "Saving..." : "Save new password"}
               </button>

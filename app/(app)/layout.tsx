@@ -36,30 +36,30 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <div className="app-shell flex min-h-screen">
       <Sidebar />
       <div className="flex-1 flex flex-col min-w-0">
-        <header className="h-14 border-b border-border bg-surface flex items-center justify-between px-6">
-          <div className="text-sm font-mono text-ink-3">Ashanti Regional R20</div>
-          <div className="flex items-center gap-4 text-sm">
+        <header className="h-16 border-b border-border-strong bg-surface flex items-center justify-between px-6">
+          <div className="text-[15px] font-mono font-bold text-ink-2">Ashanti Regional R20</div>
+          <div className="flex items-center gap-5">
             <Link
               href="/notifications"
-              className="relative font-mono text-xs uppercase tracking-wide text-ink-2 hover:text-primary"
+              className="relative font-mono text-sm font-bold uppercase tracking-wide text-ink-2 hover:text-primary"
               aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`}
             >
               Alerts
               {unread > 0 && (
-                <span className="absolute -top-2 -right-3 bg-primary text-on-primary rounded-full text-[10px] px-1.5 py-0.5 leading-none">
+                <span className="absolute -top-2.5 -right-4 bg-primary text-on-primary rounded-full text-[11px] font-bold px-1.5 py-0.5 leading-none shadow">
                   {unread > 9 ? "9+" : unread}
                 </span>
               )}
             </Link>
             <div className="text-right leading-tight">
-              <div className="text-ink">{profile?.full_name ?? user.email}</div>
-              <div className="text-[11px] font-mono text-ink-3">{roleName}</div>
+              <div className="text-[15px] font-bold text-ink">{profile?.full_name ?? user.email}</div>
+              <div className="text-xs font-mono font-bold text-ink-3">{roleName}</div>
             </div>
             <SignOutButton />
           </div>
         </header>
         <main className="flex-1 p-6 md:p-8 max-w-6xl w-full">{children}</main>
-        <footer className="border-t border-border px-6 py-3 text-[11px] font-mono text-ink-3 flex flex-wrap gap-x-4 gap-y-1 justify-between">
+        <footer className="border-t border-border-strong px-6 py-3 text-xs font-mono font-bold text-ink-3 flex flex-wrap gap-x-4 gap-y-1 justify-between">
           <span>PRETAG Ashanti Membership Intelligence System</span>
           <span>&copy; {new Date().getFullYear()} Isaac Nyamaa Boadi &mdash; all rights reserved</span>
         </footer>

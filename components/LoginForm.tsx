@@ -64,14 +64,14 @@ export function LoginForm() {
           Enter your email and we&apos;ll send a link to set a new password.
         </p>
         <label className="flex flex-col gap-1.5">
-          <span className="text-xs font-mono uppercase tracking-wide text-ink-2">Email</span>
+          <span className="text-xs font-mono font-bold uppercase tracking-wide text-ink-2">Email</span>
           <input
             type="email"
             required
             autoComplete="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className="border border-border-strong rounded bg-ground px-3 py-2 text-ink outline-none focus:border-primary"
+            className="border border-border-strong rounded bg-ground px-3 py-2 text-ink font-semibold outline-none focus:border-primary"
           />
         </label>
 
@@ -89,7 +89,7 @@ export function LoginForm() {
         <button
           type="submit"
           disabled={busy}
-          className="mt-1 bg-primary hover:bg-primary-hover text-on-primary font-display uppercase tracking-wide text-sm rounded py-2.5 disabled:opacity-60"
+          className="mt-1 bg-primary hover:bg-primary-hover text-on-primary btn-3d font-display uppercase tracking-wide text-[15px] font-extrabold py-3 disabled:opacity-60"
         >
           {busy ? "Sending..." : "Send reset link"}
         </button>
@@ -100,7 +100,7 @@ export function LoginForm() {
             setError(null);
             setNotice(null);
           }}
-          className="text-xs font-mono text-ink-3 hover:text-primary underline self-center"
+          className="text-[13px] font-mono font-bold text-ink-2 hover:text-primary underline self-center"
         >
           Back to sign in
         </button>
@@ -111,25 +111,25 @@ export function LoginForm() {
   return (
     <form onSubmit={signIn} className="flex flex-col gap-4">
       <label className="flex flex-col gap-1.5">
-        <span className="text-xs font-mono uppercase tracking-wide text-ink-2">Email</span>
+        <span className="text-xs font-mono font-bold uppercase tracking-wide text-ink-2">Email</span>
         <input
           type="email"
           required
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="border border-border-strong rounded bg-ground px-3 py-2 text-ink outline-none focus:border-primary"
+          className="border border-border-strong rounded bg-ground px-3 py-2 text-ink font-semibold outline-none focus:border-primary"
         />
       </label>
       <label className="flex flex-col gap-1.5">
-        <span className="text-xs font-mono uppercase tracking-wide text-ink-2">Password</span>
+        <span className="text-xs font-mono font-bold uppercase tracking-wide text-ink-2">Password</span>
         <input
           type="password"
           required
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="border border-border-strong rounded bg-ground px-3 py-2 text-ink outline-none focus:border-primary"
+          className="border border-border-strong rounded bg-ground px-3 py-2 text-ink font-semibold outline-none focus:border-primary"
         />
       </label>
 
@@ -142,7 +142,7 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={busy}
-        className="mt-1 bg-primary hover:bg-primary-hover text-on-primary font-display uppercase tracking-wide text-sm rounded py-2.5 disabled:opacity-60"
+        className="mt-1 bg-primary hover:bg-primary-hover text-on-primary btn-3d font-display uppercase tracking-wide text-[15px] font-extrabold py-3 disabled:opacity-60"
       >
         {busy ? "Signing in..." : "Sign in"}
       </button>
@@ -152,7 +152,7 @@ export function LoginForm() {
           setMode("reset");
           setError(null);
         }}
-        className="text-xs font-mono text-ink-3 hover:text-primary underline self-center"
+        className="text-[13px] font-mono font-bold text-ink-2 hover:text-primary underline self-center"
       >
         Forgot your password?
       </button>

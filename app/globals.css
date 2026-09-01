@@ -15,11 +15,11 @@
   --pretag-olive: #5e6b18;
   --pretag-black: #1c1712;
 
-  --ground: #fcf9ee;
+  --ground: #ede1c4;
   --surface: #ffffff;
-  --surface-2: #f7efd5;
-  --border: #e9dfc1;
-  --border-strong: #d5c89d;
+  --surface-2: #f6edd6;
+  --border: #e2d5b4;
+  --border-strong: #cbbc92;
   --ink: #1c1712;
   --ink-2: #574e40;
   --ink-3: #8a7f69;
@@ -338,6 +338,9 @@
     border-color: var(--border);
     box-shadow: var(--shadow-raised);
   }
+  .nav3d a {
+    font-weight: 600;
+  }
   .nav3d a[data-active="true"] {
     background: var(--brand-wash);
     border-color: color-mix(in srgb, var(--primary) 35%, transparent);
@@ -346,7 +349,7 @@
       inset 3px 0 0 var(--primary),
       0 1px 2px rgba(28, 23, 18, 0.06);
     color: var(--ink);
-    font-weight: 600;
+    font-weight: 800;
   }
   .nav3d a:not([aria-disabled="true"]):active {
     transform: translateY(1px);
@@ -500,6 +503,21 @@
   .app-shell h2 + p,
   .app-shell h3 + p {
     color: var(--ink-2);
+  }
+
+  /* all content text under headings is bold (same size + family) */
+  .app-shell main {
+    font-weight: 600;
+  }
+  .app-shell main input,
+  .app-shell main select,
+  .app-shell main textarea,
+  .app-shell main option,
+  .app-shell main ::placeholder {
+    font-weight: 500;
+  }
+  .app-shell main th {
+    font-weight: 700;
   }
 
   /* section tab strip: legible, active tab bold */
