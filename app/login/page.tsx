@@ -57,6 +57,12 @@ export default function LoginPage() {
         <p className="text-center text-[11px] font-mono font-semibold text-white/70 mt-3">
           &copy; {new Date().getFullYear()} Isaac Nyamaa Boadi &middot; all rights reserved
         </p>
+        <p className="text-center text-[11px] font-mono font-semibold text-white/70 mt-1">
+          Enquiries &amp; services:{" "}
+          <a href="tel:+233243744689" className="underline">+233&nbsp;24&nbsp;374&nbsp;4689</a>
+          {" "}&middot;{" "}
+          <a href="mailto:isaacnyamaa30@gmail.com" className="underline">isaacnyamaa30@gmail.com</a>
+        </p>
       </div>
     </main>
   );

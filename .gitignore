@@ -34,3 +34,4 @@ docs/comparison_*.json
 
 .vercel
 .env*
+_b.log

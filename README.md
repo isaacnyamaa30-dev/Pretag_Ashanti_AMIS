@@ -62,6 +62,10 @@ Developed by Isaac Nyamaa Boadi for PRETAG Ashanti. See [`LICENSE`](LICENSE) -
 the developer retains ownership and the right to license the system to other
 PRETAG regions and to PRETAG national.
 
+**Enquiries &amp; services:** Isaac Nyamaa Boadi &middot;
+[isaacnyamaa30@gmail.com](mailto:isaacnyamaa30@gmail.com) &middot;
+[+233 24 374 4689](tel:+233243744689)
+
 ## Key rulings
 
 - Employee Number is the identity key for matching members between months.

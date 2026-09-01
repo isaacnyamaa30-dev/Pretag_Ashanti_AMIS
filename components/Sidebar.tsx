@@ -50,6 +50,12 @@ export function Sidebar() {
       <div className="border-t border-border-strong px-4 py-3 text-[11px] font-mono font-bold text-ink leading-relaxed bg-surface-2/50">
         Developed by Isaac Nyamaa Boadi
         <br />&copy; {new Date().getFullYear()} &middot; all rights reserved
+        <br />
+        <span className="text-ink-2">Enquiries &amp; services:</span>
+        <br />
+        <a href="tel:+233243744689" className="underline">+233 24 374 4689</a>
+        <br />
+        <a href="mailto:isaacnyamaa30@gmail.com" className="underline break-all">isaacnyamaa30@gmail.com</a>
       </div>
     </aside>
   );
