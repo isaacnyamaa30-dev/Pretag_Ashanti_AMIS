@@ -11,16 +11,8 @@ export default function LoginPage() {
     <main className="login-bg relative min-h-screen overflow-hidden grid place-items-center px-4 py-12">
       {/* warm layered backdrop */}
       <div className="login-glow" aria-hidden />
+      <div className="login-pattern" aria-hidden />
       <div className="login-grain" aria-hidden />
-      <Image
-        src="/assets/pretag-emblem.jpg"
-        alt=""
-        aria-hidden
-        width={900}
-        height={900}
-        priority
-        className="login-seal"
-      />
 
       <div className="relative w-full max-w-sm">
         <div className="flex flex-col items-center gap-3 mb-7 text-center">

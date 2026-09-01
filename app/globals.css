@@ -167,17 +167,24 @@
   filter: blur(46px);
   pointer-events: none;
 }
-.login-seal {
+.login-pattern {
   position: absolute;
-  right: -16vmin;
-  bottom: -20vmin;
-  width: min(80vmin, 780px);
-  height: auto;
-  border-radius: 50%;
-  opacity: 0.3;
-  filter: saturate(1.2) contrast(1.05) drop-shadow(0 12px 40px rgba(0, 0, 0, 0.25));
-  mix-blend-mode: luminosity;
+  inset: -20% -20%;
   pointer-events: none;
+  opacity: 0.16;
+  background-image: url("/assets/pretag-emblem.jpg");
+  background-repeat: repeat;
+  background-size: 84px 84px;
+  -webkit-mask-image: radial-gradient(circle at center, #000 36%, transparent 40%);
+  mask-image: radial-gradient(circle at center, #000 36%, transparent 40%);
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  -webkit-mask-size: 84px 84px;
+  mask-size: 84px 84px;
+  filter: saturate(1.15) contrast(1.05);
+  mix-blend-mode: luminosity;
+  transform: rotate(-7deg);
+  transform-origin: center;
 }
 .login-grain {
   position: absolute;
@@ -188,16 +195,16 @@
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
 }
 @media (prefers-reduced-motion: no-preference) {
-  .login-seal {
-    animation: sealDrift 26s ease-in-out infinite alternate;
+  .login-pattern {
+    animation: patternDrift 45s linear infinite;
   }
   .login-glow {
     animation: emberPulse 8s ease-in-out infinite alternate;
   }
 }
-@keyframes sealDrift {
-  from { transform: rotate(-2deg) scale(1); }
-  to { transform: rotate(3deg) scale(1.04); }
+@keyframes patternDrift {
+  from { background-position: 0 0; }
+  to { background-position: 84px 168px; }
 }
 @keyframes emberPulse {
   from { opacity: 0.65; }
