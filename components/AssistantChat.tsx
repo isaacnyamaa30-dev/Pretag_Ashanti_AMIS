@@ -48,7 +48,7 @@ export function AssistantChat({ configured }: { configured: boolean }) {
     <div className="flex flex-col gap-4">
       {!configured && (
         <p className="text-sm text-decline bg-decline-wash border border-decline/30 rounded px-3 py-2 font-mono">
-          The AI assistant is not yet configured. Add <code>ANTHROPIC_API_KEY</code> to the server
+          The AI assistant is not yet configured. Add <code>OPENAI_API_KEY</code> to the server
           environment (Vercel &rarr; Settings &rarr; Environment Variables) to enable it.
         </p>
       )}
@@ -70,8 +70,14 @@ export function AssistantChat({ configured }: { configured: boolean }) {
       {turns.map((t, i) => (
         <div key={i} className="flex flex-col gap-2">
           <div className="self-end max-w-[85%] bg-primary text-on-primary rounded-lg px-3 py-2 text-sm">{t.q}</div>
-          <div className="self-start max-w-[92%] bg-surface border border-border rounded-lg px-4 py-3 text-sm">
-            {t.a === null && !t.error && <span className="font-mono text-ink-3">thinking…</span>}
+          <div className="self-start w-[92%] bg-surface border border-border rounded-lg px-4 py-3 text-sm">
+            {t.a === null && !t.error && (
+              <div className="flex flex-col gap-2 py-0.5">
+                <div className="shimmer h-3.5 w-11/12" />
+                <div className="shimmer h-3.5 w-4/5" />
+                <div className="shimmer h-3.5 w-2/3" />
+              </div>
+            )}
             {t.error && <span className="text-decline">{t.error}</span>}
             {t.a && <p className="whitespace-pre-wrap leading-relaxed">{t.a}</p>}
           </div>

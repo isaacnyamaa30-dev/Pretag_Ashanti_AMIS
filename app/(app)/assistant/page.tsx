@@ -6,7 +6,7 @@ export const metadata = { title: "Assistant - PRETAG AMIS" };
 
 export default async function AssistantPage() {
   await requireStaff();
-  const configured = !!process.env.ANTHROPIC_API_KEY;
+  const configured = !!process.env.OPENAI_API_KEY;
 
   return (
     <>
