@@ -47,15 +47,16 @@ export function Sidebar() {
           </div>
         ))}
       </nav>
-      <div className="border-t border-border-strong px-4 py-3 text-[11px] font-mono font-bold text-ink leading-relaxed bg-surface-2/50">
+      <div className="border-t border-border-strong px-4 py-3 text-xs font-mono font-bold text-ink leading-relaxed bg-surface-2/50">
         Developed by Isaac Nyamaa Boadi
         <br />&copy; {new Date().getFullYear()} &middot; all rights reserved
-        <br />
-        <span className="text-ink-2">Enquiries &amp; services:</span>
-        <br />
-        <a href="tel:+233243744689" className="underline">+233 24 374 4689</a>
-        <br />
-        <a href="mailto:isaacnyamaa30@gmail.com" className="underline break-all">isaacnyamaa30@gmail.com</a>
+        <div className="mt-2 pt-2 border-t border-border">
+          <span className="uppercase tracking-wide text-ink-2">Enquiries &amp; services</span>
+          <br />
+          <a href="tel:+233243744689" className="text-ink underline text-[13px]">+233&nbsp;24&nbsp;374&nbsp;4689</a>
+          <br />
+          <a href="mailto:isaacnyamaa30@gmail.com" className="text-ink underline text-[13px] break-all">isaacnyamaa30@gmail.com</a>
+        </div>
       </div>
     </aside>
   );

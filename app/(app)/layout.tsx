@@ -61,13 +61,17 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           </div>
         </header>
         <main className="flex-1 p-6 md:p-8 max-w-6xl w-full">{children}</main>
-        <footer className="border-t border-border-strong px-6 py-3 text-xs font-mono font-bold text-ink flex flex-wrap gap-x-4 gap-y-1 justify-between">
+        <footer className="border-t border-border-strong px-6 py-4 text-[13px] font-mono font-bold text-ink flex flex-wrap gap-x-6 gap-y-2 justify-between">
           <span>PRETAG Ashanti Membership Intelligence System</span>
-          <span>
-            Enquiries &amp; services:{" "}
-            <a href="tel:+233243744689" className="underline">+233 24 374 4689</a>
-            {" "}&middot;{" "}
-            <a href="mailto:isaacnyamaa30@gmail.com" className="underline">isaacnyamaa30@gmail.com</a>
+          <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <span className="uppercase tracking-wide text-ink-2">Enquiries &amp; services:</span>
+            <a href="tel:+233243744689" className="text-ink underline decoration-2 text-sm">
+              +233&nbsp;24&nbsp;374&nbsp;4689
+            </a>
+            <span aria-hidden>&middot;</span>
+            <a href="mailto:isaacnyamaa30@gmail.com" className="text-ink underline decoration-2 text-sm break-all">
+              isaacnyamaa30@gmail.com
+            </a>
           </span>
           <span>&copy; {new Date().getFullYear()} Isaac Nyamaa Boadi &mdash; all rights reserved</span>
         </footer>

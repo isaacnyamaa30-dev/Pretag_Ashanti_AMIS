@@ -91,9 +91,11 @@ export default function InstallPage() {
           <Link href="/login" className="btn-3d px-4 py-2 uppercase tracking-wide text-xs">
             Go to sign in
           </Link>
-          <span className="text-ink-3">
-            Help: <a href="tel:+233243744689" className="underline">+233 24 374 4689</a> &middot;{" "}
-            <a href="mailto:isaacnyamaa30@gmail.com" className="underline">isaacnyamaa30@gmail.com</a>
+          <span className="text-ink-2 text-sm">
+            Help:{" "}
+            <a href="tel:+233243744689" className="text-ink underline">+233&nbsp;24&nbsp;374&nbsp;4689</a>{" "}
+            &middot;{" "}
+            <a href="mailto:isaacnyamaa30@gmail.com" className="text-ink underline break-all">isaacnyamaa30@gmail.com</a>
           </span>
         </div>
 

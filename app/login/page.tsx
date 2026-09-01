@@ -66,15 +66,23 @@ export default function LoginPage() {
         >
           Quality Education, Our Concern
         </p>
-        <p className="text-center text-[11px] font-mono font-semibold text-white/70 mt-3">
+        <p className="text-center text-xs font-mono font-bold text-white/80 mt-4">
           &copy; {new Date().getFullYear()} Isaac Nyamaa Boadi &middot; all rights reserved
         </p>
-        <p className="text-center text-[11px] font-mono font-semibold text-white/70 mt-1">
-          Enquiries &amp; services:{" "}
-          <a href="tel:+233243744689" className="underline">+233&nbsp;24&nbsp;374&nbsp;4689</a>
-          {" "}&middot;{" "}
-          <a href="mailto:isaacnyamaa30@gmail.com" className="underline">isaacnyamaa30@gmail.com</a>
-        </p>
+        <div className="mt-3 rounded-lg bg-black/25 px-4 py-3 text-center">
+          <p className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#FFE7BE]">
+            Enquiries &amp; services
+          </p>
+          <p className="mt-1.5 text-base font-mono font-bold leading-relaxed">
+            <a href="tel:+233243744689" className="text-white underline decoration-white/40">
+              +233&nbsp;24&nbsp;374&nbsp;4689
+            </a>
+            <br />
+            <a href="mailto:isaacnyamaa30@gmail.com" className="text-white underline decoration-white/40 break-all">
+              isaacnyamaa30@gmail.com
+            </a>
+          </p>
+        </div>
       </div>
     </main>
   );
