@@ -549,7 +549,7 @@
         <div class="phase-head"><span class="phase-num wip">V3</span><p class="phase-title">Version 3</p><span class="phase-status wip">Partly built</span></div>
         <p class="phase-goal">Depth features; some need a key or a decision before they work.</p>
         <ol class="list">
-          <li><s>AI membership assistant</s> &mdash; ask plain-language questions ("which zones are declining, and by how much?"); answers only from the approved database, never raw uploads. <strong>Add <code>ANTHROPIC_API_KEY</code> on Vercel to switch it on.</strong></li>
+          <li><s>AI membership assistant</s> &mdash; ask plain-language questions ("which zones are declining, and by how much?"); answers only from the approved database, never raw uploads. <strong>Runs on the OpenAI API (<code>OPENAI_API_KEY</code>); needs OpenAI account credit to answer.</strong></li>
           <li><s>Membership targets</s> &mdash; annual target for the region or a zone, with a progress bar on the dashboard.</li>
           <li><s>Management-unit (school) drill-down</s> &mdash; click a district to see members per school for any month.</li>
           <li><s>Monthly cron reminder</s> &mdash; on the 5th, an in-app alert if that month's R20 has not been imported.</li>
@@ -625,14 +625,14 @@
       </ul>
       <h3>Version 3 &mdash; mostly live</h3>
       <ul>
-        <li>AI assistant (needs <code>ANTHROPIC_API_KEY</code>), membership targets, school-level drill-down, monthly upload reminder.</li>
+        <li>AI assistant (OpenAI, needs account credit), membership targets, school-level drill-down, monthly upload reminder.</li>
       </ul>
       <h3>Next</h3>
       <ul class="checklist">
         <li>Sign in on the live site and check it end to end.</li>
         <li>Create accounts for the other regional officers (Administration &rarr; Users).</li>
         <li>Reset the trial data; import the real months from month one.</li>
-        <li>To enable the assistant: get a key at console.anthropic.com and add <code>ANTHROPIC_API_KEY</code> in Vercel.</li>
+        <li>To use the assistant: add billing credit to the OpenAI account at platform.openai.com.</li>
         <li>To enable email: set SMTP in Supabase &rarr; Authentication &rarr; Emails.</li>
       </ul>
     </section>

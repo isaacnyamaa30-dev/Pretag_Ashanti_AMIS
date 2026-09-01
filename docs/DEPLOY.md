@@ -33,6 +33,19 @@ In Supabase -> **Authentication -> URL Configuration**:
 
 This makes the password-reset email links point at the live site.
 
+## AI assistant (optional)
+
+The Membership Assistant calls the OpenAI API. To enable it:
+
+1. Add billing to your OpenAI account: <https://platform.openai.com/settings/organization/billing>
+2. `OPENAI_API_KEY` is already set on Vercel. If you rotate the key:
+   `printf %s "<new key>" | npx vercel env add OPENAI_API_KEY production --force --token <TOKEN>`
+   then redeploy.
+3. Model defaults to `gpt-4o-mini`; override with `OPENAI_ASSISTANT_MODEL`.
+
+Each question sends a small data snapshot (~1-2k tokens) and gets a short answer -
+roughly USD 0.001 per question at current `gpt-4o-mini` rates.
+
 ## Updating later
 
 Re-run `npx vercel deploy --prod --yes --token <TOKEN>` from the project folder,
