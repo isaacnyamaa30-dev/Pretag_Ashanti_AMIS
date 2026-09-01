@@ -1,6 +1,8 @@
 import { Suspense } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { LoginForm } from "@/components/LoginForm";
+import { InstallApp } from "@/components/InstallApp";
 
 export const metadata = { title: "Sign in - PRETAG AMIS" };
 
@@ -46,6 +48,16 @@ export default function LoginPage() {
           <Suspense fallback={<div className="h-52" />}>
             <LoginForm />
           </Suspense>
+        </div>
+
+        <div className="mt-4 flex flex-col items-center gap-2">
+          <InstallApp label="Install app on this device" />
+          <Link
+            href="/install"
+            className="text-[11px] font-mono font-bold uppercase tracking-wide text-[#FFEDCB] underline"
+          >
+            How to install on phone &amp; laptop
+          </Link>
         </div>
 
         <p

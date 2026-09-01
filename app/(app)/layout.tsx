@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { Sidebar } from "@/components/Sidebar";
 import { SignOutButton } from "@/components/SignOutButton";
+import { InstallApp } from "@/components/InstallApp";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const supabase = createClient();
@@ -39,6 +40,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
         <header className="h-16 border-b border-border-strong bg-surface flex items-center justify-between px-6">
           <div className="text-[15px] font-mono font-bold text-ink-2">Ashanti Regional R20</div>
           <div className="flex items-center gap-5">
+            <InstallApp />
             <Link
               href="/notifications"
               className="relative font-mono text-sm font-bold uppercase tracking-wide text-ink-2 hover:text-primary"
