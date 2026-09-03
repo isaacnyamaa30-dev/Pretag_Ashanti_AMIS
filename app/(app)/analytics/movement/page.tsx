@@ -88,6 +88,26 @@ export default async function MovementPage({
         {kind === "transfer" && "Present in both, but their zone or district changed."}
       </p>
 
+      {(kind === "missing" || kind === "added") && movers.length > 0 && (
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          <a
+            href={`/api/exports?type=movers&kind=${kind}&from=${fromId}&to=${toId}`}
+            className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2"
+          >
+            Download Excel
+          </a>
+          <Link
+            href={`/reports/movement?kind=${kind}&from=${fromId}&to=${toId}`}
+            className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2"
+          >
+            Print / Save as PDF
+          </Link>
+          <span className="font-mono text-xs text-ink-3">
+            Full details for executive follow-up.
+          </span>
+        </div>
+      )}
+
       <Card className="p-0 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm font-mono min-w-[720px]">

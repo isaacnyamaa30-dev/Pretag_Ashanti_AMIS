@@ -187,13 +187,19 @@ export async function getMovers(
   kind: "added" | "missing" | "transfer",
 ): Promise<Mover[]> {
   const supabase = createClient();
-  const { data, error } = await supabase.rpc("period_movers", {
-    p_prev: prevId,
-    p_cur: curId,
-    p_kind: kind,
-  });
-  if (error) throw new Error(error.message);
-  return (data ?? []) as Mover[];
+  // A month can drop or gain well over 1000 members and PostgREST caps a result
+  // set at 1000, so page through - the executives' follow-up lists must be whole.
+  const out: Mover[] = [];
+  const PAGE = 1000;
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .rpc("period_movers", { p_prev: prevId, p_cur: curId, p_kind: kind })
+      .range(from, from + PAGE - 1);
+    if (error) throw new Error(error.message);
+    out.push(...((data ?? []) as Mover[]));
+    if (!data || data.length < PAGE) break;
+  }
+  return out;
 }
 
 export function statusClasses(status: CompareRow["status"]) {

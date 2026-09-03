@@ -96,6 +96,45 @@ export default async function ExportsPage({ searchParams }: { searchParams: { pe
         </Card>
       )}
 
+      {periods.length >= 2 && (
+        <Card className="mb-8">
+          <h3 className="font-display text-sm uppercase tracking-tight mb-2">
+            Members who left / joined the R20
+          </h3>
+          <p className="text-sm text-ink-2 mb-3">
+            The full member list for executive follow-up &mdash; those in the previous R20 but not the
+            current one, or in the current R20 but not the previous one. Excel includes columns for
+            recording follow-up. A printable version is under Reports &rarr;{" "}
+            <a href="/reports/movement" className="underline">Members Who Left / Joined</a>.
+          </p>
+          <form action="/api/exports" method="get" className="flex flex-wrap items-end gap-3">
+            <input type="hidden" name="type" value="movers" />
+            <label className="flex flex-col gap-1">
+              <span className="text-[11px] font-mono uppercase tracking-wide text-ink-2">List</span>
+              <select name="kind" defaultValue="missing" className="border border-border-strong rounded bg-ground px-2.5 py-1.5 text-sm">
+                <option value="missing">Members who left the R20</option>
+                <option value="added">New members in the R20</option>
+              </select>
+            </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-[11px] font-mono uppercase tracking-wide text-ink-2">Previous month</span>
+              <select name="from" defaultValue={periods[1].id} className="border border-border-strong rounded bg-ground px-2.5 py-1.5 text-sm">
+                {periods.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+              </select>
+            </label>
+            <label className="flex flex-col gap-1">
+              <span className="text-[11px] font-mono uppercase tracking-wide text-ink-2">Current month</span>
+              <select name="to" defaultValue={periods[0].id} className="border border-border-strong rounded bg-ground px-2.5 py-1.5 text-sm">
+                {periods.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+              </select>
+            </label>
+            <button className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2">
+              Download Excel
+            </button>
+          </form>
+        </Card>
+      )}
+
       <h3 className="font-display text-sm uppercase tracking-tight mb-3">Individual zones</h3>
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-2">
         {zones?.map((z) => (

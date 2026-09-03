@@ -189,6 +189,131 @@ export async function buildComparisonWorkbook(
   };
 }
 
+type MoverRow = {
+  employee_no: string;
+  name: string | null;
+  management_unit: string | null;
+  from_zone: string | null;
+  to_zone: string | null;
+  from_district: string | null;
+  to_district: string | null;
+};
+
+/**
+ * Follow-up workbook for the regional executives: every member who left the R20
+ * (in the previous month, not the current) or joined it (in the current month,
+ * not the previous), with their full R20 details, sorted by zone then district.
+ */
+export async function buildMoversWorkbook(
+  kind: "added" | "missing",
+  prevId: number,
+  curId: number,
+  prevLabel: string,
+  curLabel: string,
+) {
+  const supabase = createClient();
+
+  const rows: MoverRow[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await supabase
+      .rpc("period_movers", { p_prev: prevId, p_cur: curId, p_kind: kind })
+      .range(from, from + 999);
+    if (error) throw new Error(error.message);
+    rows.push(...((data ?? []) as MoverRow[]));
+    if (!data || data.length < 1000) break;
+  }
+
+  const leavers = kind === "missing";
+  const zoneOf = (r: MoverRow) => (leavers ? r.from_zone : r.to_zone) ?? "Unassigned";
+  const districtOf = (r: MoverRow) => (leavers ? r.from_district : r.to_district) ?? "Unassigned";
+  rows.sort(
+    (a, b) =>
+      zoneOf(a).localeCompare(zoneOf(b)) ||
+      districtOf(a).localeCompare(districtOf(b)) ||
+      (a.name ?? "").localeCompare(b.name ?? ""),
+  );
+
+  const wb = new ExcelJS.Workbook();
+  wb.creator = "PRETAG AMIS";
+
+  const s = wb.addWorksheet("Summary");
+  s.addRow([leavers ? "Members no longer in the R20" : "New members in the R20"]);
+  s.getRow(1).font = { bold: true, size: 14 };
+  s.addRow([]);
+  s.addRow(["Previous month", prevLabel]);
+  s.addRow(["Current month", curLabel]);
+  s.addRow([
+    "Definition",
+    leavers
+      ? `Present in the ${prevLabel} Regional R20 but not in the ${curLabel} Regional R20.`
+      : `Present in the ${curLabel} Regional R20 but not in the ${prevLabel} Regional R20.`,
+  ]);
+  s.addRow(["Total members", rows.length]);
+  s.addRow(["Generated", new Date().toISOString().slice(0, 10)]);
+  s.addRow([]);
+  s.addRow([
+    "This list shows appearances in the R20 return, not verified reasons for the change. " +
+      "It is for executive follow-up and confirmation.",
+  ]);
+  s.addRow(["PRETAG Ashanti Membership Intelligence System - Developed by Isaac Nyamaa Boadi"]);
+  s.getColumn(1).width = 20;
+  s.getColumn(2).width = 72;
+
+  const m = wb.addWorksheet("Members");
+  const whenCol = leavers ? `Last in R20 (${prevLabel})` : `First in R20 (${curLabel})`;
+  m.addRow([
+    "#",
+    "Employee No",
+    "Full Name",
+    "Management Unit",
+    "District",
+    "Zone",
+    "Region",
+    whenCol,
+    "Followed up? (Y/N)",
+    "Outcome / reason",
+  ]);
+  rows.forEach((r, i) => {
+    m.addRow([
+      i + 1,
+      r.employee_no,
+      r.name ?? "",
+      r.management_unit ?? "",
+      districtOf(r),
+      zoneOf(r),
+      "Ashanti",
+      leavers ? prevLabel : curLabel,
+      "",
+      "",
+    ]);
+  });
+  m.getRow(1).font = { bold: true };
+  m.getRow(1).eachCell((c) => {
+    c.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF7EFD5" } };
+  });
+  m.columns = [
+    { width: 5 },
+    { width: 14 },
+    { width: 34 },
+    { width: 40 },
+    { width: 24 },
+    { width: 20 },
+    { width: 10 },
+    { width: 20 },
+    { width: 18 },
+    { width: 34 },
+  ];
+  m.views = [{ state: "frozen", ySplit: 1 }];
+  m.autoFilter = "A1:J1";
+
+  const tag = leavers ? "LEFT_THE_R20" : "NEW_MEMBERS";
+  return {
+    buffer: Buffer.from(await wb.xlsx.writeBuffer()),
+    filename:
+      `PRETAG_ASHANTI_${tag}_${prevLabel.replace(/\s+/g, "_")}_to_${curLabel.replace(/\s+/g, "_")}.xlsx`.toUpperCase(),
+  };
+}
+
 export async function buildAllZonesZip(periodId: number, label: string) {
   const supabase = createClient();
   const { data: zones } = await supabase.from("zones").select("id").order("zone_name");

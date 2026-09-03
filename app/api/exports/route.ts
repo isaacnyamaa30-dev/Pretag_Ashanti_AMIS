@@ -7,7 +7,11 @@ import {
   buildZoneWorkbook,
   buildAllZonesZip,
   buildComparisonWorkbook,
+  buildMoversWorkbook,
 } from "@/lib/r20/export";
+
+const XLSX_TYPE =
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -21,6 +25,32 @@ export async function GET(req: NextRequest) {
   const zoneId = Number(params.get("zone"));
 
   const supabase = createClient();
+
+  if (type === "movers") {
+    const kind = params.get("kind") === "added" ? "added" : "missing";
+    const fromId = Number(params.get("from"));
+    const toId = Number(params.get("to"));
+    if (!fromId || !toId) return NextResponse.json({ error: "from and to required" }, { status: 400 });
+    const { data: ps } = await supabase
+      .from("reporting_periods")
+      .select("id, label")
+      .in("id", [fromId, toId]);
+    const fromLabel = ps?.find((p) => p.id === fromId)?.label ?? "previous";
+    const toLabel = ps?.find((p) => p.id === toId)?.label ?? "current";
+    const out = await buildMoversWorkbook(kind, fromId, toId, fromLabel, toLabel);
+    await logAudit({
+      action: "export.movers",
+      resourceType: "reporting_period",
+      details: { kind, fromId, toId },
+    });
+    return new NextResponse(out.buffer as BodyInit, {
+      headers: {
+        "Content-Type": XLSX_TYPE,
+        "Content-Disposition": `attachment; filename="${out.filename}"`,
+        "Cache-Control": "no-store",
+      },
+    });
+  }
 
   if (type === "comparison") {
     const fromId = Number(params.get("from"));
