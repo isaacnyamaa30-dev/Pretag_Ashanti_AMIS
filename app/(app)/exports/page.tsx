@@ -103,8 +103,8 @@ export default async function ExportsPage({ searchParams }: { searchParams: { pe
           </h3>
           <p className="text-sm text-ink-2 mb-3">
             The full member list for executive follow-up &mdash; those in the previous R20 but not the
-            current one, or in the current R20 but not the previous one. Excel includes columns for
-            recording follow-up. A printable version is under Reports &rarr;{" "}
+            current one, or in the current R20 but not the previous one. Excel and Word both include
+            blank columns for recording follow-up. A printable / PDF version is under Reports &rarr;{" "}
             <a href="/reports/movement" className="underline">Members Who Left / Joined</a>.
           </p>
           <form action="/api/exports" method="get" className="flex flex-wrap items-end gap-3">
@@ -128,8 +128,11 @@ export default async function ExportsPage({ searchParams }: { searchParams: { pe
                 {periods.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
               </select>
             </label>
-            <button className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2">
+            <button name="format" value="xlsx" className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2">
               Download Excel
+            </button>
+            <button name="format" value="docx" className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2">
+              Download Word
             </button>
           </form>
         </Card>

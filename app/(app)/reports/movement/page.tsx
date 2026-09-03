@@ -44,7 +44,8 @@ export default async function MovementReportPage({
       (a.name ?? "").localeCompare(b.name ?? ""),
   );
 
-  const excelHref = `/api/exports?type=movers&kind=${kind}&from=${fromId}&to=${toId}`;
+  const exportHref = (format: "xlsx" | "docx") =>
+    `/api/exports?type=movers&kind=${kind}&from=${fromId}&to=${toId}&format=${format}`;
   const otherKind: Kind = leavers ? "added" : "missing";
 
   return (
@@ -95,11 +96,11 @@ export default async function MovementReportPage({
 
         <div className="flex flex-wrap items-center gap-3">
           <PrintButton />
-          <a
-            href={excelHref}
-            className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2"
-          >
+          <a href={exportHref("xlsx")} className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2">
             Download Excel
+          </a>
+          <a href={exportHref("docx")} className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2">
+            Download Word
           </a>
           <a
             href={`/reports/movement?kind=${otherKind}&from=${fromId}&to=${toId}`}

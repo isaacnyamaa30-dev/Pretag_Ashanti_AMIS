@@ -91,10 +91,16 @@ export default async function MovementPage({
       {(kind === "missing" || kind === "added") && movers.length > 0 && (
         <div className="flex flex-wrap items-center gap-3 mb-4">
           <a
-            href={`/api/exports?type=movers&kind=${kind}&from=${fromId}&to=${toId}`}
+            href={`/api/exports?type=movers&kind=${kind}&from=${fromId}&to=${toId}&format=xlsx`}
             className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2"
           >
             Download Excel
+          </a>
+          <a
+            href={`/api/exports?type=movers&kind=${kind}&from=${fromId}&to=${toId}&format=docx`}
+            className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2"
+          >
+            Download Word
           </a>
           <Link
             href={`/reports/movement?kind=${kind}&from=${fromId}&to=${toId}`}

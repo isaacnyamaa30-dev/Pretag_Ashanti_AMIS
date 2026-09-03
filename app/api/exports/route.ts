@@ -8,10 +8,13 @@ import {
   buildAllZonesZip,
   buildComparisonWorkbook,
   buildMoversWorkbook,
+  buildMoversDoc,
 } from "@/lib/r20/export";
 
 const XLSX_TYPE =
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+const DOCX_TYPE =
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -28,6 +31,7 @@ export async function GET(req: NextRequest) {
 
   if (type === "movers") {
     const kind = params.get("kind") === "added" ? "added" : "missing";
+    const format = params.get("format") === "docx" ? "docx" : "xlsx";
     const fromId = Number(params.get("from"));
     const toId = Number(params.get("to"));
     if (!fromId || !toId) return NextResponse.json({ error: "from and to required" }, { status: 400 });
@@ -37,15 +41,18 @@ export async function GET(req: NextRequest) {
       .in("id", [fromId, toId]);
     const fromLabel = ps?.find((p) => p.id === fromId)?.label ?? "previous";
     const toLabel = ps?.find((p) => p.id === toId)?.label ?? "current";
-    const out = await buildMoversWorkbook(kind, fromId, toId, fromLabel, toLabel);
+    const out =
+      format === "docx"
+        ? await buildMoversDoc(kind, fromId, toId, fromLabel, toLabel)
+        : await buildMoversWorkbook(kind, fromId, toId, fromLabel, toLabel);
     await logAudit({
       action: "export.movers",
       resourceType: "reporting_period",
-      details: { kind, fromId, toId },
+      details: { kind, fromId, toId, format },
     });
     return new NextResponse(out.buffer as BodyInit, {
       headers: {
-        "Content-Type": XLSX_TYPE,
+        "Content-Type": format === "docx" ? DOCX_TYPE : XLSX_TYPE,
         "Content-Disposition": `attachment; filename="${out.filename}"`,
         "Cache-Control": "no-store",
       },

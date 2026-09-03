@@ -6,6 +6,19 @@
  */
 import ExcelJS from "exceljs";
 import JSZip from "jszip";
+import {
+  Document,
+  Packer,
+  Paragraph,
+  TextRun,
+  HeadingLevel,
+  Table,
+  TableRow,
+  TableCell,
+  WidthType,
+  AlignmentType,
+  PageOrientation,
+} from "docx";
 import { createClient } from "@/lib/supabase/server";
 import { REQUIRED_HEADERS } from "./parser";
 
@@ -199,6 +212,40 @@ type MoverRow = {
   to_district: string | null;
 };
 
+/** Every mover of one kind between two periods, sorted by zone then district
+ *  then name, with helpers for the "which side" fields. Paged so a month that
+ *  loses or gains more than 1000 members still comes back whole. */
+async function fetchMovers(kind: "added" | "missing", prevId: number, curId: number) {
+  const supabase = createClient();
+  const rows: MoverRow[] = [];
+  for (let from = 0; ; from += 1000) {
+    const { data, error } = await supabase
+      .rpc("period_movers", { p_prev: prevId, p_cur: curId, p_kind: kind })
+      .range(from, from + 999);
+    if (error) throw new Error(error.message);
+    rows.push(...((data ?? []) as MoverRow[]));
+    if (!data || data.length < 1000) break;
+  }
+  const leavers = kind === "missing";
+  const zoneOf = (r: MoverRow) => (leavers ? r.from_zone : r.to_zone) ?? "Unassigned";
+  const districtOf = (r: MoverRow) => (leavers ? r.from_district : r.to_district) ?? "Unassigned";
+  rows.sort(
+    (a, b) =>
+      zoneOf(a).localeCompare(zoneOf(b)) ||
+      districtOf(a).localeCompare(districtOf(b)) ||
+      (a.name ?? "").localeCompare(b.name ?? ""),
+  );
+  return { rows, leavers, zoneOf, districtOf };
+}
+
+function moversFilename(ext: string, leavers: boolean, prevLabel: string, curLabel: string) {
+  const tag = leavers ? "LEFT_THE_R20" : "NEW_MEMBERS";
+  return `PRETAG_ASHANTI_${tag}_${prevLabel.replace(/\s+/g, "_")}_to_${curLabel.replace(
+    /\s+/g,
+    "_",
+  )}.${ext}`.toUpperCase();
+}
+
 /**
  * Follow-up workbook for the regional executives: every member who left the R20
  * (in the previous month, not the current) or joined it (in the current month,
@@ -211,27 +258,7 @@ export async function buildMoversWorkbook(
   prevLabel: string,
   curLabel: string,
 ) {
-  const supabase = createClient();
-
-  const rows: MoverRow[] = [];
-  for (let from = 0; ; from += 1000) {
-    const { data, error } = await supabase
-      .rpc("period_movers", { p_prev: prevId, p_cur: curId, p_kind: kind })
-      .range(from, from + 999);
-    if (error) throw new Error(error.message);
-    rows.push(...((data ?? []) as MoverRow[]));
-    if (!data || data.length < 1000) break;
-  }
-
-  const leavers = kind === "missing";
-  const zoneOf = (r: MoverRow) => (leavers ? r.from_zone : r.to_zone) ?? "Unassigned";
-  const districtOf = (r: MoverRow) => (leavers ? r.from_district : r.to_district) ?? "Unassigned";
-  rows.sort(
-    (a, b) =>
-      zoneOf(a).localeCompare(zoneOf(b)) ||
-      districtOf(a).localeCompare(districtOf(b)) ||
-      (a.name ?? "").localeCompare(b.name ?? ""),
-  );
+  const { rows, leavers, zoneOf, districtOf } = await fetchMovers(kind, prevId, curId);
 
   const wb = new ExcelJS.Workbook();
   wb.creator = "PRETAG AMIS";
@@ -306,11 +333,140 @@ export async function buildMoversWorkbook(
   m.views = [{ state: "frozen", ySplit: 1 }];
   m.autoFilter = "A1:J1";
 
-  const tag = leavers ? "LEFT_THE_R20" : "NEW_MEMBERS";
   return {
     buffer: Buffer.from(await wb.xlsx.writeBuffer()),
-    filename:
-      `PRETAG_ASHANTI_${tag}_${prevLabel.replace(/\s+/g, "_")}_to_${curLabel.replace(/\s+/g, "_")}.xlsx`.toUpperCase(),
+    filename: moversFilename("xlsx", leavers, prevLabel, curLabel),
+  };
+}
+
+/**
+ * The same leaver / joiner follow-up list as a Word document - a landscape
+ * table an executive can annotate and circulate. Real .docx via the `docx`
+ * library, not an HTML shim.
+ */
+export async function buildMoversDoc(
+  kind: "added" | "missing",
+  prevId: number,
+  curId: number,
+  prevLabel: string,
+  curLabel: string,
+) {
+  const { rows, leavers, zoneOf, districtOf } = await fetchMovers(kind, prevId, curId);
+
+  const heads = [
+    "#",
+    "Employee No",
+    "Full Name",
+    "Management Unit",
+    "District",
+    "Zone",
+    leavers ? `Last in R20` : `First in R20`,
+    "Followed up? (Y/N)",
+    "Outcome / reason",
+  ];
+  const widths = [4, 9, 20, 22, 13, 11, 9, 10, 20]; // percent
+
+  const cell = (text: string, opts: { bold?: boolean; pct: number }) =>
+    new TableCell({
+      width: { size: opts.pct, type: WidthType.PERCENTAGE },
+      children: [
+        new Paragraph({
+          children: [new TextRun({ text, bold: opts.bold, size: 16 })],
+        }),
+      ],
+    });
+
+  const headerRow = new TableRow({
+    tableHeader: true,
+    children: heads.map((h, i) => cell(h, { bold: true, pct: widths[i] })),
+  });
+
+  const bodyRows = rows.map(
+    (r, i) =>
+      new TableRow({
+        children: [
+          String(i + 1),
+          r.employee_no ?? "",
+          r.name ?? "",
+          r.management_unit ?? "",
+          districtOf(r),
+          zoneOf(r),
+          leavers ? prevLabel : curLabel,
+          "",
+          "",
+        ].map((v, c) => cell(v, { pct: widths[c] })),
+      }),
+  );
+
+  const definition = leavers
+    ? `Members present in the ${prevLabel} Regional R20 but not in the ${curLabel} Regional R20.`
+    : `Members present in the ${curLabel} Regional R20 but not in the ${prevLabel} Regional R20.`;
+
+  const doc = new Document({
+    creator: "PRETAG AMIS",
+    title: leavers ? "Members no longer in the R20" : "New members in the R20",
+    sections: [
+      {
+        properties: {
+          page: { size: { orientation: PageOrientation.LANDSCAPE } },
+        },
+        children: [
+          new Paragraph({
+            alignment: AlignmentType.CENTER,
+            children: [
+              new TextRun({
+                text: "Pre-Tertiary Teachers Association of Ghana - Ashanti Region",
+                bold: true,
+                size: 18,
+              }),
+            ],
+          }),
+          new Paragraph({
+            heading: HeadingLevel.HEADING_1,
+            children: [
+              new TextRun(leavers ? "Members No Longer in the R20" : "New Members in the R20"),
+            ],
+          }),
+          new Paragraph({ children: [new TextRun({ text: definition, size: 20 })] }),
+          new Paragraph({
+            children: [
+              new TextRun({
+                text: `${rows.length} member${rows.length === 1 ? "" : "s"}  ·  generated ${new Date().toLocaleDateString(
+                  "en-GB",
+                  { day: "numeric", month: "long", year: "numeric" },
+                )}`,
+                size: 18,
+                italics: true,
+              }),
+            ],
+          }),
+          new Paragraph({ text: "" }),
+          new Table({
+            width: { size: 100, type: WidthType.PERCENTAGE },
+            rows: [headerRow, ...bodyRows],
+          }),
+          new Paragraph({ text: "" }),
+          new Paragraph({
+            children: [
+              new TextRun({
+                text:
+                  "This list shows appearances in the R20 return, not verified reasons for the change - " +
+                  "for executive follow-up and confirmation. " +
+                  "PRETAG Ashanti Membership Intelligence System - Developed by Isaac Nyamaa Boadi - " +
+                  "isaacnyamaa30@gmail.com / +233 24 374 4689.",
+                size: 14,
+                color: "666666",
+              }),
+            ],
+          }),
+        ],
+      },
+    ],
+  });
+
+  return {
+    buffer: await Packer.toBuffer(doc),
+    filename: moversFilename("docx", leavers, prevLabel, curLabel),
   };
 }
 
