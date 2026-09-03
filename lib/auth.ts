@@ -1,5 +1,18 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { getAccessState } from "@/lib/access";
+
+/**
+ * The system developer / owner. Set DEVELOPER_EMAIL in the environment to the
+ * address of the private owner account. Only that account can open the
+ * Developer console, flip the global "suspend all access" switch, or reset
+ * other people's sign-in credentials. It is never locked out by suspension.
+ */
+export const DEVELOPER_EMAIL = (process.env.DEVELOPER_EMAIL ?? "").trim().toLowerCase();
+
+export function isDeveloper(email?: string | null): boolean {
+  return !!DEVELOPER_EMAIL && !!email && email.trim().toLowerCase() === DEVELOPER_EMAIL;
+}
 
 export type Profile = {
   id: string;
@@ -48,6 +61,20 @@ export async function getSessionUser(): Promise<{ authId: string; email: string;
 export async function requireUser() {
   const session = await getSessionUser();
   if (!session) redirect("/login");
+
+  if (!isDeveloper(session.email)) {
+    // the developer's global suspension switch
+    const access = await getAccessState();
+    if (access.suspended) redirect("/suspended");
+    // an individually disabled account
+    if (session.profile && session.profile.is_active === false) redirect("/suspended?a=1");
+  }
+  return session;
+}
+
+export async function requireDeveloper() {
+  const session = await requireUser();
+  if (!isDeveloper(session.email)) redirect("/dashboard?denied=1");
   return session;
 }
 

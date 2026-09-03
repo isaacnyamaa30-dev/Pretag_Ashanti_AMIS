@@ -15,15 +15,26 @@ export default function ResetPasswordPage() {
   const [done, setDone] = useState(false);
 
   useEffect(() => {
+    // Only a genuine password-recovery link may set a new password here. A
+    // normal signed-in session must NOT - otherwise anyone already logged in
+    // (e.g. a shared trial account) could change the password from this URL.
+    // Read the hash before the client consumes and clears it.
+    const hash = typeof window !== "undefined" ? window.location.hash : "";
+    const looksLikeRecovery = hash.includes("type=recovery");
+
     const supabase = createClient();
-    // the browser client exchanges the recovery code / hash on load
-    const t = setTimeout(async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setReady(session ? "ok" : "invalid");
-    }, 400);
-    return () => clearTimeout(t);
+    const { data: sub } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "PASSWORD_RECOVERY") setReady("ok");
+    });
+
+    const t = setTimeout(() => {
+      setReady((cur) => (cur === "ok" ? cur : looksLikeRecovery ? "ok" : "invalid"));
+    }, 1200);
+
+    return () => {
+      clearTimeout(t);
+      sub.subscription.unsubscribe();
+    };
   }, []);
 
   async function submit(e: React.FormEvent) {

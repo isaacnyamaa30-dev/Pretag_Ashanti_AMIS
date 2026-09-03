@@ -1,16 +1,15 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { requireUser, isDeveloper } from "@/lib/auth";
+import { getAccessState } from "@/lib/access";
 import { Sidebar } from "@/components/Sidebar";
 import { SignOutButton } from "@/components/SignOutButton";
 import { InstallApp } from "@/components/InstallApp";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
+  const session = await requireUser();
   const supabase = createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+  const user = { id: session.authId, email: session.email };
 
   const { data: profile } = await supabase
     .from("users")
@@ -20,6 +19,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   const roleName =
     (profile?.roles as { role_name?: string } | null)?.role_name ?? "No role assigned";
+  const dev = isDeveloper(session.email);
+  const access = dev ? await getAccessState() : { suspended: false, message: "" };
 
   let unread = 0;
   if (profile?.id) {
@@ -35,8 +36,13 @@ export default async function AppLayout({ children }: { children: React.ReactNod
 
   return (
     <div className="app-shell flex min-h-screen">
-      <Sidebar />
+      <Sidebar isDeveloper={dev} />
       <div className="flex-1 flex flex-col min-w-0">
+        {dev && access.suspended && (
+          <div className="bg-decline text-on-primary text-center text-xs font-mono font-bold px-4 py-1.5">
+            You have SUSPENDED all access for other users. Resume it from the Developer console.
+          </div>
+        )}
         <header className="h-16 border-b border-border-strong bg-surface flex items-center justify-between px-6">
           <div className="text-[15px] font-mono font-bold text-ink-2">Ashanti Regional R20</div>
           <div className="flex items-center gap-5">

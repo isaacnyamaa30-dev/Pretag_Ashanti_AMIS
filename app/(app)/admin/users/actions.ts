@@ -3,8 +3,19 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin, isDeveloper, DEVELOPER_EMAIL } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
+
+/** The owner account can only be changed by the developer, never by another
+ *  administrator (e.g. the shared trial login). */
+async function assertMayEditUser(callerEmail: string, userId: string) {
+  if (isDeveloper(callerEmail)) return;
+  const admin = createAdminClient();
+  const { data } = await admin.from("users").select("email").eq("id", userId).maybeSingle();
+  if ((data?.email ?? "").toLowerCase() === DEVELOPER_EMAIL) {
+    throw new Error("This account is managed by the system developer and cannot be changed here.");
+  }
+}
 
 type Result = { ok: boolean; text: string };
 
@@ -59,8 +70,9 @@ export async function createUser(_prev: Result | null, formData: FormData): Prom
 }
 
 export async function updateUser(formData: FormData) {
-  await requireAdmin();
+  const session = await requireAdmin();
   const id = String(formData.get("id"));
+  await assertMayEditUser(session.profile.email, id);
   const role_id = Number(formData.get("role_id"));
   const { scope, zone_id, district_id } = scopeIds(formData);
   const supabase = createClient();
@@ -74,8 +86,9 @@ export async function updateUser(formData: FormData) {
 }
 
 export async function toggleUserActive(formData: FormData) {
-  await requireAdmin();
+  const session = await requireAdmin();
   const id = String(formData.get("id"));
+  await assertMayEditUser(session.profile.email, id);
   const is_active = formData.get("is_active") === "true";
   const supabase = createClient();
   const { error } = await supabase.from("users").update({ is_active: !is_active }).eq("id", id);

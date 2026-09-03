@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PATHS = ["/login", "/auth", "/install"];
+const PUBLIC_PATHS = ["/login", "/auth", "/install", "/suspended"];
 
 /** Refresh the auth session and gate access. No anonymous access to app data. */
 export async function updateSession(request: NextRequest) {

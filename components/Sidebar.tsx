@@ -2,11 +2,20 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { NAV } from "@/lib/nav";
+import { NAV, type NavGroup } from "@/lib/nav";
 import { Logo } from "@/components/Logo";
 
-export function Sidebar() {
+export function Sidebar({ isDeveloper = false }: { isDeveloper?: boolean }) {
   const pathname = usePathname();
+  const groups: NavGroup[] = isDeveloper
+    ? [
+        ...NAV,
+        {
+          label: "Owner",
+          items: [{ label: "Developer Console", href: "/developer", ready: true }],
+        },
+      ]
+    : NAV;
   return (
     <aside className="w-64 shrink-0 border-r border-border-strong bg-surface flex flex-col">
       <div className="flex items-center gap-3 px-5 py-4 border-b border-border-strong bg-surface-2/60">
@@ -18,7 +27,7 @@ export function Sidebar() {
       </div>
 
       <nav className="nav3d flex-1 overflow-y-auto py-4 px-2.5" aria-label="Primary">
-        {NAV.map((group) => (
+        {groups.map((group) => (
           <div key={group.label} className="mb-5">
             <div className="px-2 pb-2 mb-1.5 font-display text-[15px] font-extrabold uppercase tracking-tight text-ink border-b-2 border-border-strong">
               {group.label}
