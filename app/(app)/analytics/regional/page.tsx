@@ -92,7 +92,7 @@ export default async function RegionalPage() {
         <span className={`px-2.5 py-1 rounded-full ${statusClasses("stable")}`}>{stable} stable</span>
         <span className={`px-2.5 py-1 rounded-full ${statusClasses("declining")}`}>{declining} declining</span>
         <span className="px-2.5 py-1 rounded-full bg-surface-2 text-ink-3">
-          retention {region.retention_pct ?? "-"}%
+          retention {region.retention_pct === null ? "n/a" : `${region.retention_pct}%`}
         </span>
       </div>
 

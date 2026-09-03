@@ -58,7 +58,7 @@ export default async function RegionalReportPage() {
                 <tr><td className="py-1 pr-6 text-ink-3">Missing from current R20</td><td className="py-1 text-right font-mono tabular-nums">&minus;{region.missing}</td></tr>
                 <tr><td className="py-1 pr-6 text-ink-3">Net change</td><td className="py-1 text-right font-mono tabular-nums">{region.net > 0 ? "+" : ""}{region.net}</td></tr>
                 <tr><td className="py-1 pr-6 text-ink-3">Growth rate</td><td className="py-1 text-right font-mono tabular-nums">{pct(region.growth_pct)}</td></tr>
-                <tr><td className="py-1 pr-6 text-ink-3">Retention rate</td><td className="py-1 text-right font-mono tabular-nums">{region.retention_pct ?? "-"}%</td></tr>
+                <tr><td className="py-1 pr-6 text-ink-3">Retention rate</td><td className="py-1 text-right font-mono tabular-nums">{region.retention_pct === null ? "n/a" : `${region.retention_pct.toFixed(2)}%`}</td></tr>
               </>
             )}
           </tbody>

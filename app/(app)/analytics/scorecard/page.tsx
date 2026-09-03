@@ -56,6 +56,7 @@ export default async function ScorecardPage() {
         sub={`Weighted 0-100 index, ${periods[1].label} to ${periods[0].label}`}
       />
       <p className="text-xs font-mono text-ink-3 mb-4">
+        Each of the four factor columns is scored 0&ndash;100; the Score is their weighted average.
         Weights &mdash; growth {(w.growth * 100).toFixed(0)}% &middot; retention {(w.retention * 100).toFixed(0)}% &middot;
         acquisition {(w.acquisition * 100).toFixed(0)}% &middot; consistency {(w.consistency * 100).toFixed(0)}%.
         Adjust in Administration &rarr; Settings.
@@ -68,10 +69,10 @@ export default async function ScorecardPage() {
               <th className="text-left px-3 py-2 w-8">#</th>
               <th className="text-left px-3 py-2">Zone</th>
               <th className="text-right px-3 py-2">Score</th>
-              <th className="text-right px-3 py-2">Growth</th>
-              <th className="text-right px-3 py-2">Retention</th>
-              <th className="text-right px-3 py-2">Acquisition</th>
-              <th className="text-right px-3 py-2">Consistency</th>
+              <th className="text-right px-3 py-2">Growth /100</th>
+              <th className="text-right px-3 py-2">Retention /100</th>
+              <th className="text-right px-3 py-2">Acquisition /100</th>
+              <th className="text-right px-3 py-2">Consistency /100</th>
             </tr>
           </thead>
           <tbody>

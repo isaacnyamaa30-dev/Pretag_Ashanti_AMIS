@@ -31,18 +31,29 @@ export default async function ZoneAnalysisPage({ searchParams }: { searchParams:
 
   if (zoneId) {
     const supabase = createClient();
-    const [{ data: zone }, { data: districts }] = await Promise.all([
-      supabase.from("zones").select("id, zone_name").eq("id", zoneId).single(),
-      supabase
+    const { data: zone } = await supabase
+      .from("zones")
+      .select("id, zone_name")
+      .eq("id", zoneId)
+      .single();
+
+    // A large zone (e.g. Kumasi) has well over 1000 members, and a plain select
+    // is capped at 1000 - page through so the district counts are complete.
+    const byDistrict = new Map<string, number>();
+    const PAGE = 1000;
+    for (let from = 0; ; from += PAGE) {
+      const { data, error } = await supabase
         .from("membership_snapshots")
         .select("district_id, districts(district_name)")
         .eq("period_id", periods[0].id)
-        .eq("zone_id", zoneId),
-    ]);
-    const byDistrict = new Map<string, number>();
-    for (const r of districts ?? []) {
-      const n = (r.districts as { district_name?: string } | null)?.district_name ?? "Unassigned";
-      byDistrict.set(n, (byDistrict.get(n) ?? 0) + 1);
+        .eq("zone_id", zoneId)
+        .range(from, from + PAGE - 1);
+      if (error) throw new Error(error.message);
+      for (const r of data ?? []) {
+        const n = (r.districts as { district_name?: string } | null)?.district_name ?? "Unassigned";
+        byDistrict.set(n, (byDistrict.get(n) ?? 0) + 1);
+      }
+      if (!data || data.length < PAGE) break;
     }
     const list = [...byDistrict.entries()].sort((a, b) => b[1] - a[1]);
     return (
@@ -50,6 +61,12 @@ export default async function ZoneAnalysisPage({ searchParams }: { searchParams:
         <PageHeader title={zone?.zone_name ?? "Zone"} sub={`Districts - ${periods[0].label}`} />
         <Card>
           <table className="w-full text-sm font-mono">
+            <thead>
+              <tr className="border-b-2 border-border-strong text-left text-[11px] uppercase tracking-wide text-ink-2">
+                <th className="py-2">District</th>
+                <th className="py-2 text-right">Members ({periods[0].label})</th>
+              </tr>
+            </thead>
             <tbody>
               {list.map(([name, count]) => (
                 <tr key={name} className="border-b border-border last:border-0">
@@ -70,6 +87,12 @@ export default async function ZoneAnalysisPage({ searchParams }: { searchParams:
       <PageHeader title="Zone Analysis" sub={`Members by zone, ${periods[0].label}. Import a second month for growth figures.`} />
       <Card>
         <table className="w-full text-sm font-mono">
+          <thead>
+            <tr className="border-b-2 border-border-strong text-left text-[11px] uppercase tracking-wide text-ink-2">
+              <th className="py-2">Zone</th>
+              <th className="py-2 text-right">Members ({periods[0].label})</th>
+            </tr>
+          </thead>
           <tbody>
             {summary.zones.map((z) => (
               <tr key={z.zoneId} className="border-b border-border last:border-0">

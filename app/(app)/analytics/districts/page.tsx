@@ -22,17 +22,25 @@ export default async function DistrictAnalysisPage() {
 
   if (periods.length < 2) {
     const supabase = createClient();
-    const { data: rows } = await supabase
-      .from("membership_snapshots")
-      .select("district_id, districts(district_name, zones(zone_name))")
-      .eq("period_id", periods[0].id);
+    // Page through - a month's R20 is several thousand rows and a plain select
+    // stops at 1000.
     const tally = new Map<string, { zone: string; count: number }>();
-    for (const r of rows ?? []) {
-      const d = r.districts as { district_name?: string; zones?: { zone_name?: string } } | null;
-      const key = d?.district_name ?? "Unassigned";
-      const cur = tally.get(key) ?? { zone: d?.zones?.zone_name ?? "", count: 0 };
-      cur.count += 1;
-      tally.set(key, cur);
+    const PAGE = 1000;
+    for (let from = 0; ; from += PAGE) {
+      const { data: rows, error } = await supabase
+        .from("membership_snapshots")
+        .select("district_id, districts(district_name, zones(zone_name))")
+        .eq("period_id", periods[0].id)
+        .range(from, from + PAGE - 1);
+      if (error) throw new Error(error.message);
+      for (const r of rows ?? []) {
+        const d = r.districts as { district_name?: string; zones?: { zone_name?: string } } | null;
+        const key = d?.district_name ?? "Unassigned";
+        const cur = tally.get(key) ?? { zone: d?.zones?.zone_name ?? "", count: 0 };
+        cur.count += 1;
+        tally.set(key, cur);
+      }
+      if (!rows || rows.length < PAGE) break;
     }
     const list = [...tally.entries()].sort((a, b) => b[1].count - a[1].count);
     return (

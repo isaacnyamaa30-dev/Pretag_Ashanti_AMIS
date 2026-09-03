@@ -26,27 +26,37 @@ export default async function UploadDetailPage({
   if (!upload) notFound();
   const period = upload.reporting_periods as { id: number; label: string; lock_state: string } | null;
 
-  const [{ data: rows }, { data: districts }, classification] = await Promise.all([
-    supabase
-      .from("r20_staging_rows")
-      .select("id, sheet_name, row_number, employee_no_raw, employee_name_raw, district_raw, validation_status, validation_message")
-      .eq("upload_id", uploadId),
-    supabase.from("districts").select("id, district_name, zones(zone_name)").order("district_name"),
-    classifyUpload(uploadId),
-  ]);
+  // A monthly R20 is thousands of rows and PostgREST caps a plain select at
+  // 1000, so never scan the whole staging table here - query the two subsets
+  // the screen actually needs (unmapped-district rows, and problem rows) and
+  // take every count from the stored upload columns.
+  const [{ data: unmappedRows }, { data: problemRows }, { data: districts }, classification] =
+    await Promise.all([
+      supabase
+        .from("r20_staging_rows")
+        .select("district_raw")
+        .eq("upload_id", uploadId)
+        .ilike("validation_message", "%unmapped district%")
+        .limit(20000),
+      supabase
+        .from("r20_staging_rows")
+        .select("id, sheet_name, row_number, employee_no_raw, employee_name_raw, validation_status, validation_message")
+        .eq("upload_id", uploadId)
+        .neq("validation_status", "valid")
+        .order("row_number")
+        .limit(100),
+      supabase.from("districts").select("id, district_name, zones(zone_name)").order("district_name"),
+      classifyUpload(uploadId),
+    ]);
 
-  const all = rows ?? [];
   const unmappedMap = new Map<string, number>();
-  for (const r of all) {
-    if ((r.validation_message ?? "").includes("unmapped district")) {
-      const key = r.district_raw ?? "(blank)";
-      unmappedMap.set(key, (unmappedMap.get(key) ?? 0) + 1);
-    }
+  for (const r of unmappedRows ?? []) {
+    const key = r.district_raw ?? "(blank)";
+    unmappedMap.set(key, (unmappedMap.get(key) ?? 0) + 1);
   }
   const unmapped = [...unmappedMap.entries()].sort((a, b) => b[1] - a[1]);
-  const problemRows = all
-    .filter((r) => r.validation_status !== "valid")
-    .slice(0, 100);
+  const problems = problemRows ?? [];
+  const attentionTotal = Math.max(0, (upload.total_rows ?? 0) - (upload.valid_rows ?? 0));
 
   const notes = (() => {
     try {
@@ -211,10 +221,10 @@ export default async function UploadDetailPage({
         )}
       </Card>
 
-      {problemRows.length > 0 && (
+      {problems.length > 0 && (
         <div>
           <h3 className="font-display text-sm uppercase tracking-tight mb-2">
-            Rows needing attention ({all.length - upload.valid_rows} total, showing {problemRows.length})
+            Rows needing attention ({attentionTotal.toLocaleString()} total, showing {problems.length})
           </h3>
           <div className="overflow-x-auto border border-border rounded">
             <table className="w-full text-sm min-w-[640px] font-mono">
@@ -228,7 +238,7 @@ export default async function UploadDetailPage({
                 </tr>
               </thead>
               <tbody>
-                {problemRows.map((r) => (
+                {problems.map((r) => (
                   <tr key={r.id} className="border-t border-border">
                     <td className="px-3 py-1.5">{r.sheet_name}</td>
                     <td className="px-3 py-1.5 text-right tabular-nums">{r.row_number}</td>
@@ -245,7 +255,7 @@ export default async function UploadDetailPage({
 
       {(() => {
         const missing = notes.missingEmployeeNo ?? 0;
-        const importable = all.length - upload.unmapped_rows - missing;
+        const importable = Math.max(0, (upload.total_rows ?? 0) - upload.unmapped_rows - missing);
         const excluded = upload.unmapped_rows + missing;
         const alreadyImported = upload.status === "imported" || upload.status === "archived";
         const locked = period?.lock_state === "locked";

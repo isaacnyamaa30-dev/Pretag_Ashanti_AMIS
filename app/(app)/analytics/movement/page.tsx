@@ -154,7 +154,8 @@ export default async function MovementPage({
         </div>
         {movers.length > 500 && (
           <p className="text-xs font-mono text-ink-3 px-3 py-2 border-t border-border">
-            Showing the first 500 of {movers.length}. Full list in the exports (coming in the next phase).
+            Showing the first 500 of {movers.length.toLocaleString()}. The complete member-level list is
+            in the Comparison report from the Export Centre.
           </p>
         )}
       </Card>

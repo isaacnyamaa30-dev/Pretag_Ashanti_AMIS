@@ -99,7 +99,8 @@ export default async function DashboardPage() {
           <span className={`px-2.5 py-1 rounded-full ${statusClasses("stable")}`}>{counts.stable} stable</span>
           <span className={`px-2.5 py-1 rounded-full ${statusClasses("declining")}`}>{counts.declining} declining</span>
           <span className="px-2.5 py-1 rounded-full bg-surface-2 text-ink-3">
-            +{region.added} added &middot; -{region.missing} missing &middot; retention {region.retention_pct}%
+            +{region.added} added &middot; -{region.missing} missing &middot; retention{" "}
+            {region.retention_pct === null ? "n/a" : `${region.retention_pct}%`}
           </span>
         </div>
       )}

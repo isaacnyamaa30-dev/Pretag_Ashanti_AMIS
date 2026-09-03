@@ -83,7 +83,7 @@ export function CompareTable({
                 </td>
                 <td className="px-3 py-2 text-right tabular-nums">{pct(r.growth_pct)}</td>
                 <td className="px-3 py-2">
-                  <span className={`text-[11px] px-2 py-0.5 rounded-full ${statusClasses(r.status)}`}>
+                  <span className={`text-[11px] px-2 py-0.5 rounded-full capitalize ${statusClasses(r.status)}`}>
                     {r.status}
                   </span>
                 </td>

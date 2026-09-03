@@ -61,8 +61,10 @@ export default async function MultiMonthPage() {
 
       <Card className="mb-6">
         <div className="flex items-baseline justify-between flex-wrap gap-2 mb-2">
-          <h3 className="font-display text-sm uppercase tracking-tight">Membership trend &amp; projection</h3>
-          {monthlyRate(series.map((s) => ({ label: s.label, members: s.members }))) !== null && (
+          <h3 className="font-display text-sm uppercase tracking-tight">
+            Membership trend{series.length >= 3 ? " & projection" : ""}
+          </h3>
+          {series.length >= 3 && monthlyRate(series.map((s) => ({ label: s.label, members: s.members }))) !== null && (
             <span className="font-mono text-xs text-ink-3">
               average {monthlyRate(series.map((s) => ({ label: s.label, members: s.members })))!.toFixed(2)}% / month
             </span>
@@ -70,11 +72,16 @@ export default async function MultiMonthPage() {
         </div>
         <TrendChart
           data={series.map((s) => ({ label: s.label, members: s.members }))}
-          projection={projectMembership(series.map((s) => ({ label: s.label, members: s.members })), 3)}
+          projection={
+            series.length >= 3
+              ? projectMembership(series.map((s) => ({ label: s.label, members: s.members })), 3)
+              : []
+          }
         />
         <p className="text-[11px] font-mono text-ink-3 mt-2">
-          Dashed line: straight-line projection from the trend so far. A guide, not a target &mdash; it does not
-          account for mobilisation drives, payroll events or seasonality.
+          {series.length >= 3
+            ? "Dashed line: straight-line projection from the trend so far. A guide, not a target - it does not account for mobilisation drives, payroll events or seasonality."
+            : "A projection line will appear once three or more months have been imported - two points is not enough to establish a trend."}
         </p>
       </Card>
 
@@ -82,6 +89,13 @@ export default async function MultiMonthPage() {
         <Card>
           <h3 className="font-display text-sm uppercase tracking-tight mb-3">Month on month</h3>
           <table className="w-full text-sm font-mono">
+            <thead>
+              <tr className="border-b-2 border-border-strong text-left text-[11px] uppercase tracking-wide text-ink-2">
+                <th className="py-1.5">Period</th>
+                <th className="py-1.5 text-right">Net change</th>
+                <th className="py-1.5 text-right">Growth</th>
+              </tr>
+            </thead>
             <tbody>
               {steps.map((s) => (
                 <tr key={s.to} className="border-b border-border last:border-0">
@@ -106,6 +120,12 @@ export default async function MultiMonthPage() {
             Zone change over the whole period
           </h3>
           <table className="w-full text-sm font-mono">
+            <thead>
+              <tr className="border-b-2 border-border-strong text-left text-[11px] uppercase tracking-wide text-ink-2">
+                <th className="py-1.5">Zone</th>
+                <th className="py-1.5 text-right">Net change ({first.label} &rarr; {last.label})</th>
+              </tr>
+            </thead>
             <tbody>
               {zoneRows.map((z) => (
                 <tr key={z.zone_id} className="border-b border-border last:border-0">

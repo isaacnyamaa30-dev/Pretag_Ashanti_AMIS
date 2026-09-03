@@ -103,12 +103,28 @@ export async function resolveUnmapped(formData: FormData) {
 
 async function recomputeCounts(uploadId: number) {
   const supabase = createClient();
-  const { data: rows } = await supabase
-    .from("r20_staging_rows")
-    .select("validation_status, validation_message, employee_no_raw, mapped_zone_id")
-    .eq("upload_id", uploadId);
 
-  const list = rows ?? [];
+  // A month's R20 runs to several thousand staging rows; a plain select stops
+  // at 1000, so page through - otherwise the recomputed counts (and the
+  // upload status derived from them) would be badly wrong.
+  const list: {
+    validation_status: string | null;
+    validation_message: string | null;
+    employee_no_raw: string | null;
+    mapped_zone_id: number | null;
+  }[] = [];
+  const PAGE = 1000;
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from("r20_staging_rows")
+      .select("validation_status, validation_message, employee_no_raw, mapped_zone_id")
+      .eq("upload_id", uploadId)
+      .range(from, from + PAGE - 1);
+    if (error) throw new Error(error.message);
+    list.push(...(data ?? []));
+    if (!data || data.length < PAGE) break;
+  }
+
   const valid = list.filter((r) => r.validation_status === "valid").length;
   const unmapped = list.filter((r) => (r.validation_message ?? "").includes("unmapped district")).length;
   const dupes = new Set(

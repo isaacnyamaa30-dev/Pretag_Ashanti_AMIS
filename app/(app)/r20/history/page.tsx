@@ -39,9 +39,11 @@ export default async function ImportHistoryPage() {
                     <td className="px-3 py-2">
                       <Link href={`/r20/queue/${u.id}`} className="underline">{u.original_filename}</Link>
                     </td>
-                    <td className="px-3 py-2 text-right tabular-nums">{u.valid_rows}</td>
+                    <td className="px-3 py-2 text-right tabular-nums">
+                      {(u.valid_rows ?? 0).toLocaleString()}
+                    </td>
                     <td className="px-3 py-2 text-right tabular-nums text-ink-3">
-                      {(u.total_rows ?? 0) - (u.valid_rows ?? 0)}
+                      {Math.max(0, (u.total_rows ?? 0) - (u.valid_rows ?? 0)).toLocaleString()}
                     </td>
                     <td className="px-3 py-2 text-ink-3">
                       {u.approved_at ? new Date(u.approved_at).toLocaleDateString("en-GB") : "-"}

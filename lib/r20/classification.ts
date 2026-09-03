@@ -25,14 +25,25 @@ export type Classification = {
 export async function classifyUpload(uploadId: number): Promise<Classification> {
   const supabase = createClient();
 
-  const [{ data: rows }, { data: zones }, { data: districts }] = await Promise.all([
-    supabase
-      .from("r20_staging_rows")
-      .select("mapped_zone_id, mapped_district_id")
-      .eq("upload_id", uploadId),
+  const [{ data: zones }, { data: districts }] = await Promise.all([
     supabase.from("zones").select("id, zone_name").order("zone_name"),
     supabase.from("districts").select("id, district_name, zone_id"),
   ]);
+
+  // A monthly R20 has thousands of rows; PostgREST caps a plain select at 1000,
+  // so page through every staging row or the zone counts come out far too low.
+  const rows: { mapped_zone_id: number | null; mapped_district_id: number | null }[] = [];
+  const PAGE = 1000;
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from("r20_staging_rows")
+      .select("mapped_zone_id, mapped_district_id")
+      .eq("upload_id", uploadId)
+      .range(from, from + PAGE - 1);
+    if (error) throw new Error(error.message);
+    rows.push(...(data ?? []));
+    if (!data || data.length < PAGE) break;
+  }
 
   const zoneName = new Map((zones ?? []).map((z) => [z.id, z.zone_name]));
   const districtName = new Map((districts ?? []).map((d) => [d.id, d.district_name]));
@@ -42,7 +53,7 @@ export async function classifyUpload(uploadId: number): Promise<Classification> 
   const districtCounts = new Map<number, number>();
   let unclassified = 0;
 
-  for (const r of rows ?? []) {
+  for (const r of rows) {
     if (r.mapped_zone_id == null) {
       unclassified += 1;
       continue;
