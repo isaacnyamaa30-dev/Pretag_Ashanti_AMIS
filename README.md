@@ -57,12 +57,12 @@ python -m analyzer compare "R20_Ashanti-6 July.xlsx" "Ashanti-4 August.xlsx" -o 
 
 ## Copyright
 
-Copyright &copy; 2026 **Isaac Nyamaa Boadi**. All Rights Reserved.
-Developed by Isaac Nyamaa Boadi for PRETAG Ashanti. See [`LICENSE`](LICENSE) -
+Copyright &copy; 2026 **Saris IT Solution**. All Rights Reserved.
+Developed by Saris IT Solution for PRETAG Ashanti. See [`LICENSE`](LICENSE) -
 the developer retains ownership and the right to license the system to other
 PRETAG regions and to PRETAG national.
 
-**Enquiries &amp; services:** Isaac Nyamaa Boadi &middot;
+**Enquiries &amp; services:** Saris IT Solution &middot;
 [sarisitsolution@gmail.com](mailto:sarisitsolution@gmail.com) &middot;
 [+233 24 117 6269](tel:+233241176269)
 

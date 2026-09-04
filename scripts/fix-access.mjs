@@ -61,7 +61,7 @@ const sb = createClient(env.NEXT_PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_
 
   const { error: rowErr } = await sb
     .from("users")
-    .update({ email: NEW_OWNER_EMAIL, full_name: "Isaac Nyamaa Boadi (Owner)" })
+    .update({ email: NEW_OWNER_EMAIL, full_name: "Saris IT Solutions (Owner)" })
     .eq("auth_id", owner.id);
   if (rowErr) throw rowErr;
 

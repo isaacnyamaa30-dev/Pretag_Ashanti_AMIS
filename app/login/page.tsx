@@ -59,7 +59,7 @@ export default function LoginPage() {
           Quality Education, Our Concern
         </p>
         <p className="text-center text-xs font-mono font-bold text-white/80 mt-4">
-          &copy; {new Date().getFullYear()} Isaac Nyamaa Boadi &middot; All Rights Reserved
+          &copy; {new Date().getFullYear()} Saris IT Solution &middot; All Rights Reserved
         </p>
         <div className="mt-3 rounded-lg bg-black/25 px-4 py-3 text-center">
           <p className="text-xs font-mono font-bold uppercase tracking-[0.18em] text-[#FFE7BE]">

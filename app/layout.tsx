@@ -1,7 +1,7 @@
 /*
  * PRETAG Ashanti Membership Intelligence System (AMIS)
- * Copyright (c) 2026 Isaac Nyamaa Boadi. All Rights Reserved.
- * Developed by Isaac Nyamaa Boadi for PRETAG Ashanti. See /LICENSE.
+ * Copyright (c) 2026 Saris IT Solution. All Rights Reserved.
+ * Developed by Saris IT Solution for PRETAG Ashanti. See /LICENSE.
  */
 import type { Metadata, Viewport } from "next";
 import { Archivo, Source_Serif_4, IBM_Plex_Mono } from "next/font/google";
@@ -32,11 +32,11 @@ export const metadata: Metadata = {
   description:
     "Upload, validate and analyse the monthly Ashanti Regional R20. Zone and district classification, month-on-month membership analytics, and automated R20 exports.",
   applicationName: "PRETAG AMIS",
-  authors: [{ name: "Isaac Nyamaa Boadi", url: "mailto:sarisitsolution@gmail.com" }],
-  creator: "Isaac Nyamaa Boadi",
-  publisher: "Isaac Nyamaa Boadi",
+  authors: [{ name: "Saris IT Solution", url: "mailto:sarisitsolution@gmail.com" }],
+  creator: "Saris IT Solution",
+  publisher: "Saris IT Solution",
   other: {
-    copyright: "Copyright (c) 2026 Isaac Nyamaa Boadi. All Rights Reserved.",
+    copyright: "Copyright (c) 2026 Saris IT Solution. All Rights Reserved.",
   },
   manifest: "/manifest.webmanifest",
   appleWebApp: { capable: true, title: "PRETAG AMIS", statusBarStyle: "black-translucent" },

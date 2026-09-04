@@ -103,7 +103,7 @@ export default async function RegionalReportPage() {
       )}
 
       <footer className="mt-10 pt-3 border-t border-border text-[10px] font-mono text-ink-3">
-        PRETAG Ashanti Membership Intelligence System &middot; Developed by Isaac Nyamaa Boadi &middot;
+        PRETAG Ashanti Membership Intelligence System &middot; Developed by Saris IT Solution &middot;
         &copy; {new Date().getFullYear()} &middot; Enquiries &amp; services: sarisitsolution@gmail.com / +233 24 117 6269 &middot;
         Movement figures describe appearances in the R20, not verified reasons.
       </footer>

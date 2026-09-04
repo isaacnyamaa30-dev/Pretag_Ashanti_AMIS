@@ -12,7 +12,7 @@ import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
 
 const OWNER_EMAIL = (process.env.DEVELOPER_EMAIL || "sarisitsolution@gmail.com").toLowerCase();
-const OWNER_NAME = "Isaac Nyamaa Boadi (Owner)";
+const OWNER_NAME = "Saris IT Solutions (Owner)";
 
 const env = Object.fromEntries(
   readFileSync(".env.local", "utf8")

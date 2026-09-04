@@ -40,7 +40,7 @@ export default async function SuspendedPage({
               : access.message}
           </p>
           <div className="mt-5 pt-4 border-t border-border text-sm font-mono font-bold text-ink">
-            <p>Isaac Nyamaa Boadi &mdash; system developer</p>
+            <p>Saris IT Solution &mdash; system developer</p>
             <p className="mt-1">
               <a href="tel:+233241176269" className="text-ink underline">+233&nbsp;24&nbsp;117&nbsp;6269</a>
             </p>
@@ -52,7 +52,7 @@ export default async function SuspendedPage({
           </div>
         </div>
         <p className="mt-4 text-center text-[11px] font-mono font-bold text-white/80">
-          &copy; {new Date().getFullYear()} Isaac Nyamaa Boadi &middot; All Rights Reserved
+          &copy; {new Date().getFullYear()} Saris IT Solution &middot; All Rights Reserved
         </p>
       </div>
     </main>

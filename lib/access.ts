@@ -12,7 +12,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 export type AccessState = { suspended: boolean; message: string; updatedAt: string | null };
 
 const DEFAULT_MESSAGE =
-  "Access to the system has been temporarily suspended by the developer while commercial terms are being finalised. Please contact Isaac Nyamaa Boadi.";
+  "Access to the system has been temporarily suspended by the developer while commercial terms are being finalised. Please contact Saris IT Solution.";
 
 export async function getAccessState(): Promise<AccessState> {
   try {

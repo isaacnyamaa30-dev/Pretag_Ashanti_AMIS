@@ -79,7 +79,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               sarisitsolution@gmail.com
             </a>
           </span>
-          <span>&copy; {new Date().getFullYear()} Isaac Nyamaa Boadi &mdash; All Rights Reserved</span>
+          <span>&copy; {new Date().getFullYear()} Saris IT Solution &mdash; All Rights Reserved</span>
         </footer>
       </div>
     </div>

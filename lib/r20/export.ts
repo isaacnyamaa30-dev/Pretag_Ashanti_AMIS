@@ -282,7 +282,7 @@ export async function buildMoversWorkbook(
     "This list shows appearances in the R20 return, not verified reasons for the change. " +
       "It is for executive follow-up and confirmation.",
   ]);
-  s.addRow(["PRETAG Ashanti Membership Intelligence System - Developed by Isaac Nyamaa Boadi"]);
+  s.addRow(["PRETAG Ashanti Membership Intelligence System - Developed by Saris IT Solution"]);
   s.getColumn(1).width = 20;
   s.getColumn(2).width = 72;
 
@@ -452,7 +452,7 @@ export async function buildMoversDoc(
                 text:
                   "This list shows appearances in the R20 return, not verified reasons for the change - " +
                   "for executive follow-up and confirmation. " +
-                  "PRETAG Ashanti Membership Intelligence System - Developed by Isaac Nyamaa Boadi - " +
+                  "PRETAG Ashanti Membership Intelligence System - Developed by Saris IT Solution - " +
                   "sarisitsolution@gmail.com / +233 24 117 6269.",
                 size: 14,
                 color: "666666",

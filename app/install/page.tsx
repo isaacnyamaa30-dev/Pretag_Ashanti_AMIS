@@ -100,7 +100,7 @@ export default function InstallPage() {
         </div>
 
         <p className="mt-6 text-[11px] font-mono font-bold text-ink-3">
-          &copy; {new Date().getFullYear()} Isaac Nyamaa Boadi &middot; All Rights Reserved
+          &copy; {new Date().getFullYear()} Saris IT Solution &middot; All Rights Reserved
         </p>
       </div>
     </main>
