@@ -42,7 +42,7 @@ export default async function SuspendedPage({
           <div className="mt-5 pt-4 border-t border-border text-sm font-mono font-bold text-ink">
             <p>Isaac Nyamaa Boadi &mdash; system developer</p>
             <p className="mt-1">
-              <a href="tel:+233243744689" className="text-ink underline">+233&nbsp;24&nbsp;374&nbsp;4689</a>
+              <a href="tel:+233241176269" className="text-ink underline">+233&nbsp;24&nbsp;117&nbsp;6269</a>
             </p>
             <p>
               <a href="mailto:sarisitsolution@gmail.com" className="text-ink underline break-all">

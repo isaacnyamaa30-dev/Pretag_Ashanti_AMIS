@@ -64,7 +64,7 @@ PRETAG regions and to PRETAG national.
 
 **Enquiries &amp; services:** Isaac Nyamaa Boadi &middot;
 [sarisitsolution@gmail.com](mailto:sarisitsolution@gmail.com) &middot;
-[+233 24 374 4689](tel:+233243744689)
+[+233 24 117 6269](tel:+233241176269)
 
 ## Key rulings
 

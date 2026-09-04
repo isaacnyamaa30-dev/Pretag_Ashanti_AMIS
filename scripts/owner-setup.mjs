@@ -11,7 +11,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "node:fs";
 
-const OWNER_EMAIL = (process.env.DEVELOPER_EMAIL || "isaacnyamaa30+owner@gmail.com").toLowerCase();
+const OWNER_EMAIL = (process.env.DEVELOPER_EMAIL || "sarisitsolution@gmail.com").toLowerCase();
 const OWNER_NAME = "Isaac Nyamaa Boadi (Owner)";
 
 const env = Object.fromEntries(

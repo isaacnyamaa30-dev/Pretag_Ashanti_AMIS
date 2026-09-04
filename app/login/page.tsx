@@ -66,8 +66,8 @@ export default function LoginPage() {
             Enquiries &amp; services
           </p>
           <p className="mt-1.5 text-base font-mono font-bold leading-relaxed">
-            <a href="tel:+233243744689" className="text-white underline decoration-white/40">
-              +233&nbsp;24&nbsp;374&nbsp;4689
+            <a href="tel:+233241176269" className="text-white underline decoration-white/40">
+              +233&nbsp;24&nbsp;117&nbsp;6269
             </a>
             <br />
             <a href="mailto:sarisitsolution@gmail.com" className="text-white underline decoration-white/40 break-all">

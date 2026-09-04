@@ -71,8 +71,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <span>PRETAG Ashanti Membership Intelligence System</span>
           <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span className="uppercase tracking-wide text-ink-2">Enquiries &amp; services:</span>
-            <a href="tel:+233243744689" className="text-ink underline decoration-2 text-sm">
-              +233&nbsp;24&nbsp;374&nbsp;4689
+            <a href="tel:+233241176269" className="text-ink underline decoration-2 text-sm">
+              +233&nbsp;24&nbsp;117&nbsp;6269
             </a>
             <span aria-hidden>&middot;</span>
             <a href="mailto:sarisitsolution@gmail.com" className="text-ink underline decoration-2 text-sm break-all">

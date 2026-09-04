@@ -93,7 +93,7 @@ export default function InstallPage() {
           </Link>
           <span className="text-ink-2 text-sm">
             Help:{" "}
-            <a href="tel:+233243744689" className="text-ink underline">+233&nbsp;24&nbsp;374&nbsp;4689</a>{" "}
+            <a href="tel:+233241176269" className="text-ink underline">+233&nbsp;24&nbsp;117&nbsp;6269</a>{" "}
             &middot;{" "}
             <a href="mailto:sarisitsolution@gmail.com" className="text-ink underline break-all">sarisitsolution@gmail.com</a>
           </span>

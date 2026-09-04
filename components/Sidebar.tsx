@@ -62,7 +62,7 @@ export function Sidebar({ isDeveloper = false }: { isDeveloper?: boolean }) {
         <div className="mt-2 pt-2 border-t border-border">
           <span className="uppercase tracking-wide text-ink-2">Enquiries &amp; services</span>
           <br />
-          <a href="tel:+233243744689" className="text-ink underline text-[13px]">+233&nbsp;24&nbsp;374&nbsp;4689</a>
+          <a href="tel:+233241176269" className="text-ink underline text-[13px]">+233&nbsp;24&nbsp;117&nbsp;6269</a>
           <br />
           <a href="mailto:sarisitsolution@gmail.com" className="text-ink underline text-[13px] break-all">sarisitsolution@gmail.com</a>
         </div>
