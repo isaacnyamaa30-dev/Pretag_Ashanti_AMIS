@@ -75,8 +75,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               +233&nbsp;24&nbsp;374&nbsp;4689
             </a>
             <span aria-hidden>&middot;</span>
-            <a href="mailto:isaacnyamaa30@gmail.com" className="text-ink underline decoration-2 text-sm break-all">
-              isaacnyamaa30@gmail.com
+            <a href="mailto:sarisitsolution@gmail.com" className="text-ink underline decoration-2 text-sm break-all">
+              sarisitsolution@gmail.com
             </a>
           </span>
           <span>&copy; {new Date().getFullYear()} Isaac Nyamaa Boadi &mdash; All Rights Reserved</span>

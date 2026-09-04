@@ -32,7 +32,7 @@ export const metadata: Metadata = {
   description:
     "Upload, validate and analyse the monthly Ashanti Regional R20. Zone and district classification, month-on-month membership analytics, and automated R20 exports.",
   applicationName: "PRETAG AMIS",
-  authors: [{ name: "Isaac Nyamaa Boadi", url: "mailto:isaacnyamaa30@gmail.com" }],
+  authors: [{ name: "Isaac Nyamaa Boadi", url: "mailto:sarisitsolution@gmail.com" }],
   creator: "Isaac Nyamaa Boadi",
   publisher: "Isaac Nyamaa Boadi",
   other: {

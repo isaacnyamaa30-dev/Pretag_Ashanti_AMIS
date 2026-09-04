@@ -453,7 +453,7 @@ export async function buildMoversDoc(
                   "This list shows appearances in the R20 return, not verified reasons for the change - " +
                   "for executive follow-up and confirmation. " +
                   "PRETAG Ashanti Membership Intelligence System - Developed by Isaac Nyamaa Boadi - " +
-                  "isaacnyamaa30@gmail.com / +233 24 374 4689.",
+                  "sarisitsolution@gmail.com / +233 24 374 4689.",
                 size: 14,
                 color: "666666",
               }),

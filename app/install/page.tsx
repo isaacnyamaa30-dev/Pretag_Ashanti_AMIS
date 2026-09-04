@@ -95,7 +95,7 @@ export default function InstallPage() {
             Help:{" "}
             <a href="tel:+233243744689" className="text-ink underline">+233&nbsp;24&nbsp;374&nbsp;4689</a>{" "}
             &middot;{" "}
-            <a href="mailto:isaacnyamaa30@gmail.com" className="text-ink underline break-all">isaacnyamaa30@gmail.com</a>
+            <a href="mailto:sarisitsolution@gmail.com" className="text-ink underline break-all">sarisitsolution@gmail.com</a>
           </span>
         </div>
 

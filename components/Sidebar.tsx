@@ -64,7 +64,7 @@ export function Sidebar({ isDeveloper = false }: { isDeveloper?: boolean }) {
           <br />
           <a href="tel:+233243744689" className="text-ink underline text-[13px]">+233&nbsp;24&nbsp;374&nbsp;4689</a>
           <br />
-          <a href="mailto:isaacnyamaa30@gmail.com" className="text-ink underline text-[13px] break-all">isaacnyamaa30@gmail.com</a>
+          <a href="mailto:sarisitsolution@gmail.com" className="text-ink underline text-[13px] break-all">sarisitsolution@gmail.com</a>
         </div>
       </div>
     </aside>

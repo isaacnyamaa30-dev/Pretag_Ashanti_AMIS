@@ -70,8 +70,8 @@ export default function LoginPage() {
               +233&nbsp;24&nbsp;374&nbsp;4689
             </a>
             <br />
-            <a href="mailto:isaacnyamaa30@gmail.com" className="text-white underline decoration-white/40 break-all">
-              isaacnyamaa30@gmail.com
+            <a href="mailto:sarisitsolution@gmail.com" className="text-white underline decoration-white/40 break-all">
+              sarisitsolution@gmail.com
             </a>
           </p>
         </div>

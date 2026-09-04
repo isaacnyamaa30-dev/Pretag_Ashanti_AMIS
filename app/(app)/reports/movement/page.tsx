@@ -168,7 +168,7 @@ export default async function MovementReportPage({
 
       <footer className="mt-8 pt-3 border-t border-border text-[10px] font-mono text-ink-3">
         PRETAG Ashanti Membership Intelligence System &middot; Developed by Isaac Nyamaa Boadi &middot;
-        &copy; {new Date().getFullYear()} &middot; Enquiries: isaacnyamaa30@gmail.com / +233 24 374 4689 &middot;
+        &copy; {new Date().getFullYear()} &middot; Enquiries: sarisitsolution@gmail.com / +233 24 374 4689 &middot;
         This list shows appearances in the R20 return, not verified reasons &mdash; for executive follow-up
         and confirmation.
       </footer>
