@@ -92,24 +92,22 @@ export function Sidebar({ isDeveloper = false }: { isDeveloper?: boolean }) {
         <Contact />
       </aside>
 
-      {/* Mobile: slide-in drawer */}
-      <div
-        className={`lg:hidden fixed inset-0 z-40 bg-black/50 transition-opacity duration-200 ${
-          open ? "opacity-100" : "pointer-events-none opacity-0"
-        }`}
-        onClick={close}
-        aria-hidden={!open}
-      />
-      <aside
-        className={`lg:hidden fixed inset-y-0 left-0 z-50 flex w-[82vw] max-w-xs flex-col border-r border-border-strong bg-surface shadow-2xl transition-transform duration-200 ${
-          open ? "translate-x-0" : "-translate-x-full"
-        }`}
-        aria-hidden={!open}
-      >
-        <Brand />
-        <NavList groups={groups} onNavigate={close} />
-        <Contact />
-      </aside>
+      {/* Mobile: slide-in drawer. Only mounted while open so an off-canvas
+          panel can never widen the page or make the phone zoom out. */}
+      {open && (
+        <div className="lg:hidden">
+          <div
+            className="drawer-overlay fixed inset-0 z-40 bg-black/50"
+            onClick={close}
+            aria-hidden
+          />
+          <aside className="drawer-panel fixed inset-y-0 left-0 z-50 flex w-[80vw] max-w-xs flex-col border-r border-border-strong bg-surface shadow-2xl">
+            <Brand />
+            <NavList groups={groups} onNavigate={close} />
+            <Contact />
+          </aside>
+        </div>
+      )}
     </>
   );
 }

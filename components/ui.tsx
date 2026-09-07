@@ -19,9 +19,9 @@ export function Card({ children, className = "" }: { children: ReactNode; classN
 
 export function StatTile({ value, label }: { value: ReactNode; label: string }) {
   return (
-    <div className="stat-3d p-4">
-      <div className="font-display text-2xl font-extrabold tabular-nums leading-none">{value}</div>
-      <div className="text-xs font-mono text-ink-3 mt-1.5">{label}</div>
+    <div className="stat-3d p-3 sm:p-4 min-w-0">
+      <div className="font-display text-xl sm:text-2xl font-extrabold tabular-nums leading-tight break-words">{value}</div>
+      <div className="text-xs font-mono text-ink-3 mt-1.5 break-words">{label}</div>
     </div>
   );
 }

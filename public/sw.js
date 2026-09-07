@@ -1,7 +1,7 @@
 /* PRETAG AMIS - minimal service worker.
    Network-first for pages/data (membership data must be fresh), cache-first for
    static assets, and an offline fallback so the shell still opens. */
-const CACHE = "pretag-amis-v1";
+const CACHE = "pretag-amis-v2";
 const OFFLINE_URL = "/offline.html";
 
 self.addEventListener("install", (e) => {

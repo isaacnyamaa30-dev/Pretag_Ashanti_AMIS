@@ -267,6 +267,28 @@
   }
 }
 
+/* mobile navigation drawer */
+.drawer-overlay {
+  animation: drawer-fade 0.15s ease-out;
+}
+.drawer-panel {
+  animation: drawer-slide 0.2s ease-out;
+}
+@keyframes drawer-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes drawer-slide {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .drawer-overlay,
+  .drawer-panel {
+    animation: none;
+  }
+}
+
 @media print {
   aside,
   header,
@@ -296,12 +318,17 @@
 @layer base {
   html {
     background: var(--ground);
+    /* never let a stray wide child (off-canvas menu, a table) make the whole
+       page scroll sideways / zoom out on a phone */
+    overflow-x: hidden;
   }
   body {
     background: var(--ground);
     color: var(--ink);
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    max-width: 100%;
   }
   h1, h2, h3, h4 {
     font-family: var(--font-display);
@@ -480,10 +507,11 @@
   .app-shell h1 {
     font-family: var(--font-display);
     font-weight: 800;
-    font-size: clamp(1.55rem, 2.6vw, 1.9rem);
+    font-size: clamp(1.3rem, 5.5vw, 1.9rem);
     color: var(--ink);
     letter-spacing: -0.015em;
-    line-height: 1.1;
+    line-height: 1.12;
+    overflow-wrap: anywhere;
   }
   .app-shell h2 {
     font-family: var(--font-display);
