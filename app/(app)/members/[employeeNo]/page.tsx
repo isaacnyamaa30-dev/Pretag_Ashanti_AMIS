@@ -65,13 +65,13 @@ export default async function MemberProfilePage({ params }: { params: { employee
           <h3 className="font-display text-sm uppercase tracking-tight mb-3">R20 history</h3>
           <div className="flex flex-col gap-1">
             {timeline.map((t) => (
-              <div key={t.label} className="flex items-center gap-3 text-sm font-mono">
+              <div key={t.label} className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-sm font-mono">
                 <span
-                  className={`w-2 h-2 rounded-full ${t.present ? "bg-grow" : "bg-decline"}`}
+                  className={`w-2 h-2 rounded-full shrink-0 ${t.present ? "bg-grow" : "bg-decline"}`}
                   aria-hidden
                 />
-                <span className="w-32">{t.label}</span>
-                <span className={t.present ? "text-ink-2" : "text-decline"}>
+                <span className="w-28 shrink-0">{t.label}</span>
+                <span className={`min-w-0 break-words ${t.present ? "text-ink-2" : "text-decline"}`}>
                   {t.present ? `Present - ${t.zone} / ${t.district}` : "Not in R20"}
                 </span>
               </div>

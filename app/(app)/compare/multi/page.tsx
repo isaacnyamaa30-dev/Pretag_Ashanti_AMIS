@@ -88,7 +88,8 @@ export default async function MultiMonthPage() {
       <div className="grid md:grid-cols-2 gap-4 mb-6">
         <Card>
           <h3 className="font-display text-sm uppercase tracking-tight mb-3">Month on month</h3>
-          <table className="w-full text-sm font-mono">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm font-mono min-w-[280px]">
             <thead>
               <tr className="border-b-2 border-border-strong text-left text-[11px] uppercase tracking-wide text-ink-2">
                 <th className="py-1.5">Period</th>
@@ -110,6 +111,7 @@ export default async function MultiMonthPage() {
               ))}
             </tbody>
           </table>
+          </div>
           <p className="text-xs font-mono text-ink-3 mt-3">
             Best month: {best.to} ({best.net > 0 ? "+" : ""}{best.net}) &middot; Worst: {worst.to} ({worst.net})
           </p>
@@ -119,7 +121,8 @@ export default async function MultiMonthPage() {
           <h3 className="font-display text-sm uppercase tracking-tight mb-3">
             Zone change over the whole period
           </h3>
-          <table className="w-full text-sm font-mono">
+          <div className="overflow-x-auto">
+          <table className="w-full text-sm font-mono min-w-[280px]">
             <thead>
               <tr className="border-b-2 border-border-strong text-left text-[11px] uppercase tracking-wide text-ink-2">
                 <th className="py-1.5">Zone</th>
@@ -137,6 +140,7 @@ export default async function MultiMonthPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </Card>
       </div>
     </>

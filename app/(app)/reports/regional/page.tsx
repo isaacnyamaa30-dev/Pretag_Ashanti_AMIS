@@ -75,7 +75,8 @@ export default async function RegionalReportPage() {
       {zones.length > 0 && (
         <section className="mb-6">
           <h2 className="font-display text-sm uppercase tracking-tight mb-2">3. Zone performance</h2>
-          <table className="text-xs w-full border border-border">
+          <div className="overflow-x-auto">
+          <table className="text-xs w-full min-w-[420px] border border-border">
             <thead>
               <tr className="bg-surface-2 text-left">
                 <th className="px-2 py-1">Zone</th>
@@ -99,6 +100,7 @@ export default async function RegionalReportPage() {
               ))}
             </tbody>
           </table>
+          </div>
         </section>
       )}
 
