@@ -54,7 +54,8 @@ export default async function ExecutiveReportPage({
     year: "numeric",
   });
   const isCustom = !PRESETS.some((p) => p.key === preset) || !!(searchParams.from && searchParams.to);
-  const docHref = `/api/exports?type=executive&from=${report.from.id}&to=${report.to.id}`;
+  const exportHref = (format: "pdf" | "docx") =>
+    `/api/exports?type=executive&from=${report.from.id}&to=${report.to.id}&format=${format}`;
 
   return (
     <div className="print-report">
@@ -106,13 +107,19 @@ export default async function ExecutiveReportPage({
         </form>
 
         <div className="flex flex-wrap gap-2">
-          <PrintButton />
           <a
-            href={docHref}
+            href={exportHref("pdf")}
             className="font-mono text-xs uppercase tracking-wide bg-primary text-on-primary rounded px-3 py-2"
           >
-            &#8681; Download as Word
+            &#8681; Download PDF
           </a>
+          <a
+            href={exportHref("docx")}
+            className="font-mono text-xs uppercase tracking-wide border border-border-strong rounded px-3 py-2"
+          >
+            &#8681; Download Word
+          </a>
+          <PrintButton label="Print" />
         </div>
       </div>
 

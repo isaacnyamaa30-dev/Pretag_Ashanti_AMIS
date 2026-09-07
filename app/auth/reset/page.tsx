@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
+import { PasswordField } from "@/components/PasswordField";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
@@ -82,28 +83,18 @@ export default function ResetPasswordPage() {
 
           {ready === "ok" && !done && (
             <form onSubmit={submit} className="flex flex-col gap-4">
-              <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-mono font-bold uppercase tracking-wide text-ink-2">New password</span>
-                <input
-                  type="password"
-                  required
-                  autoComplete="new-password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  className="border border-border-strong rounded bg-ground px-3 py-2 outline-none focus:border-primary"
-                />
-              </label>
-              <label className="flex flex-col gap-1.5">
-                <span className="text-xs font-mono font-bold uppercase tracking-wide text-ink-2">Confirm new password</span>
-                <input
-                  type="password"
-                  required
-                  autoComplete="new-password"
-                  value={confirm}
-                  onChange={(e) => setConfirm(e.target.value)}
-                  className="border border-border-strong rounded bg-ground px-3 py-2 outline-none focus:border-primary"
-                />
-              </label>
+              <PasswordField
+                label="New password"
+                autoComplete="new-password"
+                value={password}
+                onChange={setPassword}
+              />
+              <PasswordField
+                label="Confirm new password"
+                autoComplete="new-password"
+                value={confirm}
+                onChange={setConfirm}
+              />
               {error && (
                 <p className="text-sm text-decline bg-decline-wash border border-decline/30 rounded px-3 py-2">
                   {error}

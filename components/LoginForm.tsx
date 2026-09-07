@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { PasswordField } from "@/components/PasswordField";
 
 type Mode = "signin" | "reset";
 
@@ -121,17 +122,12 @@ export function LoginForm() {
           className="border border-border-strong rounded bg-ground px-3 py-2 text-ink font-semibold outline-none focus:border-primary"
         />
       </label>
-      <label className="flex flex-col gap-1.5">
-        <span className="text-xs font-mono font-bold uppercase tracking-wide text-ink-2">Password</span>
-        <input
-          type="password"
-          required
-          autoComplete="current-password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border border-border-strong rounded bg-ground px-3 py-2 text-ink font-semibold outline-none focus:border-primary"
-        />
-      </label>
+      <PasswordField
+        label="Password"
+        autoComplete="current-password"
+        value={password}
+        onChange={setPassword}
+      />
 
       {error && (
         <p className="text-sm text-decline bg-decline-wash border border-decline/30 rounded px-3 py-2">

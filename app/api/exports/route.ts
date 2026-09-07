@@ -10,12 +10,14 @@ import {
   buildMoversWorkbook,
   buildMoversDoc,
   buildExecutiveDoc,
+  buildExecutivePdf,
 } from "@/lib/r20/export";
 
 const XLSX_TYPE =
   "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 const DOCX_TYPE =
   "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+const PDF_TYPE = "application/pdf";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -64,15 +66,17 @@ export async function GET(req: NextRequest) {
     const fromId = Number(params.get("from"));
     const toId = Number(params.get("to"));
     if (!fromId || !toId) return NextResponse.json({ error: "from and to required" }, { status: 400 });
-    const out = await buildExecutiveDoc(fromId, toId);
+    const format = params.get("format") === "pdf" ? "pdf" : "docx";
+    const out =
+      format === "pdf" ? await buildExecutivePdf(fromId, toId) : await buildExecutiveDoc(fromId, toId);
     await logAudit({
       action: "export.executive",
       resourceType: "reporting_period",
-      details: { fromId, toId },
+      details: { fromId, toId, format },
     });
     return new NextResponse(out.buffer as BodyInit, {
       headers: {
-        "Content-Type": DOCX_TYPE,
+        "Content-Type": format === "pdf" ? PDF_TYPE : DOCX_TYPE,
         "Content-Disposition": `attachment; filename="${out.filename}"`,
         "Cache-Control": "no-store",
       },

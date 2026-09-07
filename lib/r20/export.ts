@@ -22,6 +22,7 @@ import {
 import { createClient } from "@/lib/supabase/server";
 import { getImportedPeriods } from "@/lib/analytics";
 import { buildExecutiveReport } from "@/lib/reports";
+import { PdfReport } from "@/lib/pdf";
 import { REQUIRED_HEADERS } from "./parser";
 
 type SnapshotRow = {
@@ -668,6 +669,126 @@ export async function buildExecutiveDoc(fromId: number, toId: number) {
   return {
     buffer: await Packer.toBuffer(doc),
     filename: `PRETAG_ASHANTI_EXECUTIVE_REPORT_${slug}.docx`,
+  };
+}
+
+/** The Executive report as a genuine, server-generated PDF (pdf-lib). */
+export async function buildExecutivePdf(fromId: number, toId: number) {
+  const periods = await getImportedPeriods();
+  const r = await buildExecutiveReport(periods, fromId, toId);
+
+  const signed = (n: number) => `${n > 0 ? "+" : n < 0 ? "-" : ""}${Math.abs(n)}`;
+  const pct = (v: number | null) => (v === null ? "n/a" : `${v > 0 ? "+" : ""}${v.toFixed(2)}%`);
+
+  const pdf = await PdfReport.create();
+  pdf.title(
+    `Membership Report - ${r.name}`,
+    "Pre-Tertiary Teachers Association of Ghana - Ashanti Region",
+  );
+  pdf.paragraph(
+    `Prepared for the Regional / National Executive Council. Covering ${r.span}. ` +
+      `Generated ${new Date().toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}.`,
+    { size: 9, italic: true },
+  );
+  pdf.rule();
+
+  if (r.region) {
+    pdf.heading("1. Position");
+    pdf.table(
+      [
+        { header: "Measure", width: 320 },
+        { header: "Value", width: 175, align: "right" },
+      ],
+      [
+        [`Opening membership (${r.from.label})`, r.region.previous.toLocaleString()],
+        [`Closing membership (${r.to.label})`, r.region.current.toLocaleString()],
+        ["Joined over the period", `+${r.region.added.toLocaleString()}`],
+        ["Left over the period", `-${r.region.missing.toLocaleString()}`],
+        ["Net change", signed(r.region.net)],
+        ["Growth rate", pct(r.region.growth_pct)],
+        [
+          "Retention rate",
+          r.region.retention_pct === null ? "n/a" : `${r.region.retention_pct.toFixed(2)}%`,
+        ],
+      ],
+    );
+  }
+
+  if (r.summary) {
+    pdf.heading("2. Executive summary");
+    pdf.paragraph(r.summary);
+    if (r.trajectory) pdf.paragraph(r.trajectory);
+  }
+
+  if (r.steps.length > 0) {
+    pdf.heading("3. Month by month");
+    pdf.table(
+      [
+        { header: "Step", width: 255 },
+        { header: "Net change", width: 120, align: "right" },
+        { header: "Growth", width: 120, align: "right" },
+      ],
+      r.steps.map((s) => [`${s.from} - ${s.to}`, signed(s.net), pct(s.pct)]),
+    );
+    if (r.best && r.worst && r.steps.length >= 2) {
+      pdf.paragraph(
+        `Strongest month: ${r.best.to} (${signed(r.best.net)}). Weakest month: ${r.worst.to} (${signed(r.worst.net)}).`,
+        { size: 9, italic: true },
+      );
+    }
+  }
+
+  if (r.zones.length > 0) {
+    pdf.heading("4. Zone performance");
+    pdf.table(
+      [
+        { header: "Zone", width: 155 },
+        { header: "Opening", width: 65, align: "right" },
+        { header: "Closing", width: 65, align: "right" },
+        { header: "Net", width: 55, align: "right" },
+        { header: "Growth", width: 75, align: "right" },
+        { header: "Status", width: 80 },
+      ],
+      r.zones.map((z) => [
+        z.name,
+        z.previous.toLocaleString(),
+        z.current.toLocaleString(),
+        signed(z.net),
+        pct(z.growth_pct),
+        z.status,
+      ]),
+    );
+  }
+
+  if (r.risingDistricts.length > 0 || r.fallingDistricts.length > 0) {
+    pdf.heading("5. Districts of note");
+    if (r.risingDistricts.length > 0) {
+      pdf.paragraph("Largest gains", { size: 9, italic: true });
+      pdf.paragraph(
+        r.risingDistricts.map((d) => `${d.name} (${d.zone_name})  ${signed(d.net)}`).join("\n"),
+        { size: 9 },
+      );
+    }
+    if (r.fallingDistricts.length > 0) {
+      pdf.paragraph("Largest losses", { size: 9, italic: true });
+      pdf.paragraph(
+        r.fallingDistricts.map((d) => `${d.name} (${d.zone_name})  ${signed(d.net)}`).join("\n"),
+        { size: 9 },
+      );
+    }
+  }
+
+  pdf.footnote(
+    `Covers ${r.monthsCovered} imported month${r.monthsCovered === 1 ? "" : "s"} (${r.span}). ` +
+      "Movement figures describe appearances in the monthly R20 return, not verified reasons for joining or leaving. " +
+      "PRETAG Ashanti Membership Intelligence System - Developed by Saris IT Solution - " +
+      "sarisitsolution@gmail.com / +233 24 117 6269.",
+  );
+
+  const slug = r.name.replace(/[^\dA-Za-z]+/g, "_").replace(/^_|_$/g, "").toUpperCase();
+  return {
+    buffer: await pdf.toBuffer(),
+    filename: `PRETAG_ASHANTI_EXECUTIVE_REPORT_${slug}.pdf`,
   };
 }
 
