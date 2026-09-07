@@ -189,7 +189,7 @@ export default async function ExecutiveReportPage({
                   </tbody>
                 </table>
               </div>
-              {best && worst && (
+              {best && worst && steps.length >= 2 && (
                 <p className="text-xs font-mono text-ink-3 mt-2">
                   Strongest month: {best.to} ({signed(best.net)}) &middot; Weakest: {worst.to} ({signed(worst.net)})
                 </p>

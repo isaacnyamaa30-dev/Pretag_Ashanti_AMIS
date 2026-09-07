@@ -589,7 +589,7 @@ export async function buildExecutiveDoc(fromId: number, toId: number) {
         r.steps.map((s) => [`${s.from} → ${s.to}`, signed(s.net), pct(s.pct)]),
       ),
     );
-    if (r.best && r.worst) {
+    if (r.best && r.worst && r.steps.length >= 2) {
       children.push(
         para(
           `Strongest month: ${r.best.to} (${signed(r.best.net)}). Weakest month: ${r.worst.to} (${signed(
