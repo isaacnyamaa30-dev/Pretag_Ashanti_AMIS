@@ -9,6 +9,7 @@ import {
   buildComparisonWorkbook,
   buildMoversWorkbook,
   buildMoversDoc,
+  buildExecutiveDoc,
 } from "@/lib/r20/export";
 
 const XLSX_TYPE =
@@ -53,6 +54,25 @@ export async function GET(req: NextRequest) {
     return new NextResponse(out.buffer as BodyInit, {
       headers: {
         "Content-Type": format === "docx" ? DOCX_TYPE : XLSX_TYPE,
+        "Content-Disposition": `attachment; filename="${out.filename}"`,
+        "Cache-Control": "no-store",
+      },
+    });
+  }
+
+  if (type === "executive") {
+    const fromId = Number(params.get("from"));
+    const toId = Number(params.get("to"));
+    if (!fromId || !toId) return NextResponse.json({ error: "from and to required" }, { status: 400 });
+    const out = await buildExecutiveDoc(fromId, toId);
+    await logAudit({
+      action: "export.executive",
+      resourceType: "reporting_period",
+      details: { fromId, toId },
+    });
+    return new NextResponse(out.buffer as BodyInit, {
+      headers: {
+        "Content-Type": DOCX_TYPE,
         "Content-Disposition": `attachment; filename="${out.filename}"`,
         "Cache-Control": "no-store",
       },

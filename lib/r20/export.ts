@@ -20,6 +20,8 @@ import {
   PageOrientation,
 } from "docx";
 import { createClient } from "@/lib/supabase/server";
+import { getImportedPeriods } from "@/lib/analytics";
+import { buildExecutiveReport } from "@/lib/reports";
 import { REQUIRED_HEADERS } from "./parser";
 
 type SnapshotRow = {
@@ -467,6 +469,205 @@ export async function buildMoversDoc(
   return {
     buffer: await Packer.toBuffer(doc),
     filename: moversFilename("docx", leavers, prevLabel, curLabel),
+  };
+}
+
+/**
+ * The Executive (REC / NEC) report as an editable Word document: cover heading,
+ * position table, the deterministic executive-summary paragraphs, month-by-month
+ * movement, the zone league table and the districts of note. Built from the same
+ * `buildExecutiveReport` data the on-screen report uses, so the two never drift.
+ */
+export async function buildExecutiveDoc(fromId: number, toId: number) {
+  const periods = await getImportedPeriods();
+  const r = await buildExecutiveReport(periods, fromId, toId);
+
+  const signed = (n: number) => `${n > 0 ? "+" : n < 0 ? "−" : ""}${Math.abs(n)}`;
+  const pct = (v: number | null) => (v === null ? "n/a" : `${v > 0 ? "+" : ""}${v.toFixed(2)}%`);
+
+  const tcell = (text: string, opts: { bold?: boolean; pct: number; right?: boolean } = { pct: 20 }) =>
+    new TableCell({
+      width: { size: opts.pct, type: WidthType.PERCENTAGE },
+      children: [
+        new Paragraph({
+          alignment: opts.right ? AlignmentType.RIGHT : AlignmentType.LEFT,
+          children: [new TextRun({ text, bold: opts.bold, size: 18 })],
+        }),
+      ],
+    });
+
+  const table = (headers: { text: string; pct: number; right?: boolean }[], body: string[][]) =>
+    new Table({
+      width: { size: 100, type: WidthType.PERCENTAGE },
+      rows: [
+        new TableRow({
+          tableHeader: true,
+          children: headers.map((h) => tcell(h.text, { bold: true, pct: h.pct, right: h.right })),
+        }),
+        ...body.map(
+          (cells) =>
+            new TableRow({
+              children: cells.map((c, i) =>
+                tcell(c, { pct: headers[i].pct, right: headers[i].right }),
+              ),
+            }),
+        ),
+      ],
+    });
+
+  const heading = (text: string) =>
+    new Paragraph({ heading: HeadingLevel.HEADING_2, spacing: { before: 260, after: 120 }, children: [new TextRun(text)] });
+  const para = (text: string, opts: { size?: number; italics?: boolean; color?: string } = {}) =>
+    new Paragraph({
+      spacing: { after: 120 },
+      children: [new TextRun({ text, size: opts.size ?? 20, italics: opts.italics, color: opts.color })],
+    });
+
+  const children: (Paragraph | Table)[] = [
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      children: [
+        new TextRun({
+          text: "Pre-Tertiary Teachers Association of Ghana — Ashanti Region",
+          bold: true,
+          size: 20,
+        }),
+      ],
+    }),
+    new Paragraph({
+      heading: HeadingLevel.HEADING_1,
+      children: [new TextRun(`Membership Report — ${r.name}`)],
+    }),
+    para(
+      `Prepared for the Regional / National Executive Council. Covering ${r.span}. Generated ${new Date().toLocaleDateString(
+        "en-GB",
+        { day: "numeric", month: "long", year: "numeric" },
+      )}.`,
+      { size: 18, italics: true },
+    ),
+  ];
+
+  if (r.region) {
+    children.push(heading("1. Position"));
+    children.push(
+      table(
+        [
+          { text: "Measure", pct: 60 },
+          { text: "Value", pct: 40, right: true },
+        ],
+        [
+          [`Opening membership (${r.from.label})`, r.region.previous.toLocaleString()],
+          [`Closing membership (${r.to.label})`, r.region.current.toLocaleString()],
+          ["Joined over the period", `+${r.region.added.toLocaleString()}`],
+          ["Left over the period", `−${r.region.missing.toLocaleString()}`],
+          ["Net change", signed(r.region.net)],
+          ["Growth rate", pct(r.region.growth_pct)],
+          [
+            "Retention rate",
+            r.region.retention_pct === null ? "n/a" : `${r.region.retention_pct.toFixed(2)}%`,
+          ],
+        ],
+      ),
+    );
+  }
+
+  if (r.summary) {
+    children.push(heading("2. Executive summary"));
+    children.push(para(r.summary));
+    if (r.trajectory) children.push(para(r.trajectory));
+  }
+
+  if (r.steps.length > 0) {
+    children.push(heading("3. Month by month"));
+    children.push(
+      table(
+        [
+          { text: "Step", pct: 50 },
+          { text: "Net change", pct: 25, right: true },
+          { text: "Growth", pct: 25, right: true },
+        ],
+        r.steps.map((s) => [`${s.from} → ${s.to}`, signed(s.net), pct(s.pct)]),
+      ),
+    );
+    if (r.best && r.worst) {
+      children.push(
+        para(
+          `Strongest month: ${r.best.to} (${signed(r.best.net)}). Weakest month: ${r.worst.to} (${signed(
+            r.worst.net,
+          )}).`,
+          { size: 18, italics: true },
+        ),
+      );
+    }
+  }
+
+  if (r.zones.length > 0) {
+    children.push(heading("4. Zone performance"));
+    children.push(
+      table(
+        [
+          { text: "Zone", pct: 34 },
+          { text: "Opening", pct: 14, right: true },
+          { text: "Closing", pct: 14, right: true },
+          { text: "Net", pct: 12, right: true },
+          { text: "Growth", pct: 14, right: true },
+          { text: "Status", pct: 12 },
+        ],
+        r.zones.map((z) => [
+          z.name,
+          z.previous.toLocaleString(),
+          z.current.toLocaleString(),
+          signed(z.net),
+          pct(z.growth_pct),
+          z.status,
+        ]),
+      ),
+    );
+  }
+
+  if (r.risingDistricts.length > 0 || r.fallingDistricts.length > 0) {
+    children.push(heading("5. Districts of note"));
+    if (r.risingDistricts.length > 0) {
+      children.push(para("Largest gains", { size: 18, italics: true }));
+      r.risingDistricts.forEach((d) =>
+        children.push(para(`  ${d.name} (${d.zone_name})  ${signed(d.net)}`, { size: 18 })),
+      );
+    }
+    if (r.fallingDistricts.length > 0) {
+      children.push(para("Largest losses", { size: 18, italics: true }));
+      r.fallingDistricts.forEach((d) =>
+        children.push(para(`  ${d.name} (${d.zone_name})  ${signed(d.net)}`, { size: 18 })),
+      );
+    }
+  }
+
+  children.push(
+    new Paragraph({
+      spacing: { before: 300 },
+      children: [
+        new TextRun({
+          text:
+            `Covers ${r.monthsCovered} imported month${r.monthsCovered === 1 ? "" : "s"} (${r.span}). ` +
+            "Movement figures describe appearances in the monthly R20 return, not verified reasons for joining or leaving. " +
+            "PRETAG Ashanti Membership Intelligence System — Developed by Saris IT Solution — " +
+            "sarisitsolution@gmail.com / +233 24 117 6269.",
+          size: 14,
+          color: "666666",
+        }),
+      ],
+    }),
+  );
+
+  const doc = new Document({
+    creator: "PRETAG AMIS",
+    title: `Membership Report - ${r.name}`,
+    sections: [{ children }],
+  });
+
+  const slug = r.name.replace(/[^\dA-Za-z]+/g, "_").replace(/^_|_$/g, "").toUpperCase();
+  return {
+    buffer: await Packer.toBuffer(doc),
+    filename: `PRETAG_ASHANTI_EXECUTIVE_REPORT_${slug}.docx`,
   };
 }
 

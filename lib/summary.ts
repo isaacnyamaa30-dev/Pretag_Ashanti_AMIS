@@ -65,3 +65,32 @@ export function executiveSummary(
 
   return parts.join(" ");
 }
+
+/**
+ * One sentence on the month-by-month path across a multi-month reporting range:
+ * whether membership rose steadily, fell steadily, or moved unevenly, and which
+ * month was strongest and weakest. Empty when the range is a single step.
+ */
+export function trajectoryNote(
+  steps: { to: string; net: number }[],
+): string {
+  if (steps.length < 2) return "";
+
+  const ups = steps.filter((s) => s.net > 0).length;
+  const downs = steps.filter((s) => s.net < 0).length;
+  const best = steps.reduce((a, b) => (b.net > a.net ? b : a));
+  const worst = steps.reduce((a, b) => (b.net < a.net ? b : a));
+
+  let shape: string;
+  if (downs === 0) shape = "Membership rose in every month of the period";
+  else if (ups === 0) shape = "Membership fell in every month of the period";
+  else if (ups > downs) shape = "Membership rose in most months, with some months of decline";
+  else if (downs > ups) shape = "Membership fell in most months, with some months of recovery";
+  else shape = "Membership moved unevenly through the period, gaining and losing in roughly equal measure";
+
+  const sign = (n: number) => `${n > 0 ? "+" : ""}${n}`;
+  return (
+    `${shape}. The strongest month was ${best.to} (${sign(best.net)}) and the weakest was ` +
+    `${worst.to} (${sign(worst.net)}).`
+  );
+}

@@ -3,6 +3,7 @@ import { Tabs } from "@/components/Tabs";
 
 const TABS = [
   { href: "/reports/regional", label: "Regional report" },
+  { href: "/reports/executive", label: "Executive report" },
   { href: "/reports/movement", label: "Members who left / joined" },
 ];
 

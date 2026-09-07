@@ -43,6 +43,7 @@ export const NAV: NavGroup[] = [
     label: "Reports",
     items: [
       { label: "Regional Report", href: "/reports/regional", ready: true },
+      { label: "Executive Report", href: "/reports/executive", ready: true },
       { label: "Members Who Left / Joined", href: "/reports/movement", ready: true },
     ],
   },
