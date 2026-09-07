@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { NAV, type NavGroup } from "@/lib/nav";
@@ -134,6 +135,9 @@ function Contact() {
 
 export function Sidebar({ isDeveloper = false }: { isDeveloper?: boolean }) {
   const { open, close } = useNav();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const groups: NavGroup[] = isDeveloper
     ? [
         ...NAV,
@@ -153,22 +157,22 @@ export function Sidebar({ isDeveloper = false }: { isDeveloper?: boolean }) {
         <Contact />
       </aside>
 
-      {/* Mobile: slide-in drawer. Only mounted while open so an off-canvas
-          panel can never widen the page or make the phone zoom out. */}
-      {open && (
-        <div className="lg:hidden">
-          <div
-            className="drawer-overlay fixed inset-0 z-40 bg-black/50"
-            onClick={close}
-            aria-hidden
-          />
-          <aside className="drawer-panel fixed inset-y-0 left-0 z-50 flex w-[80vw] max-w-xs flex-col border-r border-border-strong bg-surface shadow-2xl">
-            <Brand />
-            <NavListCollapsible groups={groups} />
-            <Contact />
-          </aside>
-        </div>
-      )}
+      {/* Mobile: slide-in drawer, portalled to <body> so it sits outside the
+          app-shell flex row (otherwise it steals width from the page) and
+          above every other layer. Only mounted while open. */}
+      {mounted &&
+        open &&
+        createPortal(
+          <div className="lg:hidden">
+            <div className="drawer-overlay" onClick={close} aria-hidden />
+            <aside className="drawer-panel flex flex-col border-r border-border-strong bg-surface shadow-2xl">
+              <Brand />
+              <NavListCollapsible groups={groups} />
+              <Contact />
+            </aside>
+          </div>,
+          document.body,
+        )}
     </>
   );
 }

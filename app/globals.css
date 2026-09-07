@@ -267,11 +267,24 @@
   }
 }
 
-/* mobile navigation drawer */
+/* mobile navigation drawer - portalled to <body>. Explicit positioning here
+   (not Tailwind utilities) so nothing in the component layer can override it. */
 .drawer-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background: rgba(0, 0, 0, 0.5);
   animation: drawer-fade 0.15s ease-out;
 }
 .drawer-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  z-index: 100;
+  width: 80vw;
+  max-width: 20rem;
+  overflow-y: auto;
   animation: drawer-slide 0.2s ease-out;
 }
 @keyframes drawer-fade {
