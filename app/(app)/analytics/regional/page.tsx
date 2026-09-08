@@ -22,9 +22,9 @@ export default async function RegionalPage() {
 
   const latest = periods[0];
   const previous = periods[1];
-  const summary = await periodSummary(latest.id);
 
   if (!previous) {
+    const summary = await periodSummary(latest.id);
     return (
       <>
         <PageHeader
