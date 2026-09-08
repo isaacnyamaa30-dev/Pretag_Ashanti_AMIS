@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 
 export type Period = { id: number; label: string; month: number; year: number; lock_state: string };
@@ -31,8 +32,8 @@ export async function getBands(): Promise<Bands> {
   return { growing_above: v?.growing_above ?? 0.5, declining_below: v?.declining_below ?? -0.5 };
 }
 
-/** Imported periods, newest first. */
-export async function getImportedPeriods(): Promise<Period[]> {
+/** Imported periods, newest first. Cached per request - several callers need it. */
+export const getImportedPeriods = cache(async function getImportedPeriods(): Promise<Period[]> {
   const supabase = createClient();
   const { data } = await supabase
     .from("reporting_periods")
@@ -45,7 +46,7 @@ export async function getImportedPeriods(): Promise<Period[]> {
   return (data ?? [])
     .filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)))
     .map(({ id, label, month, year, lock_state }) => ({ id, label, month, year, lock_state }));
-}
+});
 
 function classify(previous: number, growthPct: number | null, bands: Bands): CompareRow["status"] {
   if (previous === 0) return "new";
@@ -92,20 +93,11 @@ export async function comparePeriods(prevId: number, curId: number): Promise<Com
     });
 }
 
-/** Total members per imported period, oldest first - for the trend chart. */
+/** Total members per imported period, oldest first - for the trend chart.
+ *  One RPC call (membership_series), not a count query per period. */
 export async function getMembershipTrend(): Promise<{ label: string; members: number }[]> {
-  const supabase = createClient();
-  const periods = await getImportedPeriods();
-  const ordered = [...periods].reverse();
-  const out: { label: string; members: number }[] = [];
-  for (const p of ordered) {
-    const { count } = await supabase
-      .from("membership_snapshots")
-      .select("*", { count: "exact", head: true })
-      .eq("period_id", p.id);
-    out.push({ label: p.label, members: count ?? 0 });
-  }
-  return out;
+  const series = await membershipSeries();
+  return series.map((s) => ({ label: s.label, members: s.members }));
 }
 
 export async function periodSummary(periodId: number) {

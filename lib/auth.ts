@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { getAccessState } from "@/lib/access";
@@ -28,8 +29,19 @@ export type Profile = {
 const ADMIN_ROLES = ["Super Administrator", "Regional Administrator"];
 const STAFF_ROLES = [...ADMIN_ROLES, "Regional Executive", "Regional Data Officer"];
 
-/** Signed-in user + linked profile, or null. */
-export async function getSessionUser(): Promise<{ authId: string; email: string; profile: Profile | null } | null> {
+/**
+ * Signed-in user + linked profile, or null.
+ *
+ * Wrapped in React `cache()` so the auth check and the profile query run at
+ * most once per request, however many times `requireUser` / `requireStaff` /
+ * the layout ask for it. The Vercel function and Supabase sit in the same
+ * region, but every avoided round trip still counts.
+ */
+export const getSessionUser = cache(async function getSessionUser(): Promise<{
+  authId: string;
+  email: string;
+  profile: Profile | null;
+} | null> {
   const supabase = createClient();
   const {
     data: { user },
@@ -56,7 +68,7 @@ export async function getSessionUser(): Promise<{ authId: string; email: string;
     : null;
 
   return { authId: user.id, email: user.email ?? "", profile };
-}
+});
 
 export async function requireUser() {
   const session = await getSessionUser();

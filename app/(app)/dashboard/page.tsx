@@ -8,8 +8,7 @@ import {
   getMembershipTrend,
   statusClasses,
 } from "@/lib/analytics";
-import { TrendChart } from "@/components/charts/TrendChart";
-import { ZoneGrowthChart } from "@/components/charts/ZoneGrowthChart";
+import { TrendChart, ZoneGrowthChart } from "@/components/charts";
 
 export const metadata = { title: "Dashboard - PRETAG AMIS" };
 

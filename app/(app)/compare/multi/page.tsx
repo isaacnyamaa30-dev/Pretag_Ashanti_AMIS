@@ -1,5 +1,5 @@
 import { PageHeader, Card, StatTile } from "@/components/ui";
-import { TrendChart } from "@/components/charts/TrendChart";
+import { TrendChart } from "@/components/charts";
 import { membershipSeries, comparePeriods } from "@/lib/analytics";
 import { projectMembership, monthlyRate } from "@/lib/forecast";
 

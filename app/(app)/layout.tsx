@@ -1,5 +1,3 @@
-import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
 import { requireUser, isDeveloper } from "@/lib/auth";
 import { getAccessState } from "@/lib/access";
 import { Sidebar } from "@/components/Sidebar";
@@ -7,34 +5,15 @@ import { SidebarToggle } from "@/components/SidebarToggle";
 import { NavProvider } from "@/components/nav/NavContext";
 import { SignOutButton } from "@/components/SignOutButton";
 import { InstallApp } from "@/components/InstallApp";
+import { AlertsLink } from "@/components/AlertsLink";
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const session = await requireUser();
-  const supabase = createClient();
-  const user = { id: session.authId, email: session.email };
-
-  const { data: profile } = await supabase
-    .from("users")
-    .select("id, full_name, email, roles(role_name)")
-    .eq("auth_id", user.id)
-    .maybeSingle();
-
-  const roleName =
-    (profile?.roles as { role_name?: string } | null)?.role_name ?? "No role assigned";
   const dev = isDeveloper(session.email);
-  const access = dev ? await getAccessState() : { suspended: false, message: "" };
+  const access = dev ? await getAccessState() : { suspended: false };
 
-  let unread = 0;
-  if (profile?.id) {
-    const [{ count: total }, { count: read }] = await Promise.all([
-      supabase.from("notifications").select("*", { count: "exact", head: true }),
-      supabase
-        .from("notification_reads")
-        .select("*", { count: "exact", head: true })
-        .eq("user_id", profile.id),
-    ]);
-    unread = Math.max(0, (total ?? 0) - (read ?? 0));
-  }
+  const roleName = session.profile?.role || "No role assigned";
+  const displayName = session.profile?.full_name ?? session.email;
 
   return (
     <NavProvider>
@@ -55,20 +34,9 @@ export default async function AppLayout({ children }: { children: React.ReactNod
             <span className="hidden sm:inline-flex">
               <InstallApp />
             </span>
-            <Link
-              href="/notifications"
-              className="relative font-mono text-sm font-bold uppercase tracking-wide text-ink-2 hover:text-primary"
-              aria-label={`Notifications${unread ? `, ${unread} unread` : ""}`}
-            >
-              Alerts
-              {unread > 0 && (
-                <span className="absolute -top-2.5 -right-4 bg-primary text-on-primary rounded-full text-[11px] font-bold px-1.5 py-0.5 leading-none shadow">
-                  {unread > 9 ? "9+" : unread}
-                </span>
-              )}
-            </Link>
+            <AlertsLink userId={session.profile?.id} />
             <div className="hidden md:block text-right leading-tight">
-              <div className="text-[15px] font-bold text-ink">{profile?.full_name ?? user.email}</div>
+              <div className="text-[15px] font-bold text-ink">{displayName}</div>
               <div className="text-xs font-mono font-bold text-ink-3">{roleName}</div>
             </div>
             <SignOutButton />

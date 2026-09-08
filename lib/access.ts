@@ -7,6 +7,7 @@
  * bounced to /suspended. Read through the service-role client so the check
  * never depends on the caller's own RLS.
  */
+import { cache } from "react";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 export type AccessState = { suspended: boolean; message: string; updatedAt: string | null };
@@ -14,7 +15,8 @@ export type AccessState = { suspended: boolean; message: string; updatedAt: stri
 const DEFAULT_MESSAGE =
   "Access to the system has been temporarily suspended by the developer while commercial terms are being finalised. Please contact Saris IT Solution.";
 
-export async function getAccessState(): Promise<AccessState> {
+/** Cached per request - the layout and requireUser both need it. */
+export const getAccessState = cache(async function getAccessState(): Promise<AccessState> {
   try {
     const admin = createAdminClient();
     const { data } = await admin
@@ -36,7 +38,7 @@ export async function getAccessState(): Promise<AccessState> {
     // never let a settings read failure lock the whole system out
     return { suspended: false, message: DEFAULT_MESSAGE, updatedAt: null };
   }
-}
+});
 
 export async function setAccessState(suspended: boolean, message: string): Promise<void> {
   const admin = createAdminClient();
