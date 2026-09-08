@@ -1,5 +1,19 @@
-import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+
+/**
+ * Cache tags. The membership figures change only when an R20 is imported (or the
+ * data is reset); the performance bands change only when an admin edits Settings.
+ * The heavy region-wide reads below go through `unstable_cache` under these tags
+ * and are read with the service-role client (they are region-wide aggregates,
+ * not per-user data), so a normal page view is a cache hit and never touches the
+ * database. `revalidateTag` in the import / reset / settings actions clears them.
+ */
+export const MEMBERSHIP_TAG = "membership";
+export const SETTINGS_TAG = "settings";
+
+const db = createAdminClient;
 
 export type Period = { id: number; label: string; month: number; year: number; lock_state: string };
 
@@ -21,32 +35,38 @@ export type CompareRow = {
 
 export type Bands = { growing_above: number; declining_below: number };
 
-export async function getBands(): Promise<Bands> {
-  const supabase = createClient();
-  const { data } = await supabase
-    .from("settings")
-    .select("value")
-    .eq("key", "performance_bands")
-    .maybeSingle();
-  const v = data?.value as Partial<Bands> | undefined;
-  return { growing_above: v?.growing_above ?? 0.5, declining_below: v?.declining_below ?? -0.5 };
-}
+export const getBands = unstable_cache(
+  async function getBands(): Promise<Bands> {
+    const { data } = await db()
+      .from("settings")
+      .select("value")
+      .eq("key", "performance_bands")
+      .maybeSingle();
+    const v = data?.value as Partial<Bands> | undefined;
+    return { growing_above: v?.growing_above ?? 0.5, declining_below: v?.declining_below ?? -0.5 };
+  },
+  ["bands"],
+  { tags: [SETTINGS_TAG] },
+);
 
-/** Imported periods, newest first. Cached per request - several callers need it. */
-export const getImportedPeriods = cache(async function getImportedPeriods(): Promise<Period[]> {
-  const supabase = createClient();
-  const { data } = await supabase
-    .from("reporting_periods")
-    .select("id, label, month, year, lock_state, r20_uploads!inner(status)")
-    .eq("r20_uploads.status", "imported")
-    .order("year", { ascending: false })
-    .order("month", { ascending: false });
-  // dedupe periods (one approved upload each, but be safe)
-  const seen = new Set<number>();
-  return (data ?? [])
-    .filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)))
-    .map(({ id, label, month, year, lock_state }) => ({ id, label, month, year, lock_state }));
-});
+/** Imported periods, newest first. */
+export const getImportedPeriods = unstable_cache(
+  async function getImportedPeriods(): Promise<Period[]> {
+    const { data } = await db()
+      .from("reporting_periods")
+      .select("id, label, month, year, lock_state, r20_uploads!inner(status)")
+      .eq("r20_uploads.status", "imported")
+      .order("year", { ascending: false })
+      .order("month", { ascending: false });
+    // dedupe periods (one approved upload each, but be safe)
+    const seen = new Set<number>();
+    return (data ?? [])
+      .filter((p) => (seen.has(p.id) ? false : (seen.add(p.id), true)))
+      .map(({ id, label, month, year, lock_state }) => ({ id, label, month, year, lock_state }));
+  },
+  ["imported-periods"],
+  { tags: [MEMBERSHIP_TAG] },
+);
 
 function classify(previous: number, growthPct: number | null, bands: Bands): CompareRow["status"] {
   if (previous === 0) return "new";
@@ -56,15 +76,20 @@ function classify(previous: number, growthPct: number | null, bands: Bands): Com
   return "stable";
 }
 
-export async function comparePeriods(prevId: number, curId: number): Promise<CompareRow[]> {
-  const supabase = createClient();
-  const [{ data, error }, bands] = await Promise.all([
-    supabase.rpc("compare_periods", { p_prev: prevId, p_cur: curId }),
-    getBands(),
-  ]);
-  if (error) throw new Error(error.message);
+const rawComparePeriods = unstable_cache(
+  async (prevId: number, curId: number) => {
+    const { data, error } = await db().rpc("compare_periods", { p_prev: prevId, p_cur: curId });
+    if (error) throw new Error(error.message);
+    return (data ?? []) as Omit<CompareRow, "net" | "growth_pct" | "retention_pct" | "status">[];
+  },
+  ["compare-periods"],
+  { tags: [MEMBERSHIP_TAG] },
+);
 
-  return ((data ?? []) as Omit<CompareRow, "net" | "growth_pct" | "retention_pct" | "status">[])
+export async function comparePeriods(prevId: number, curId: number): Promise<CompareRow[]> {
+  const [data, bands] = await Promise.all([rawComparePeriods(prevId, curId), getBands()]);
+
+  return data
     .map((r) => {
       const previous = Number(r.previous);
       const current = Number(r.current);
@@ -100,9 +125,9 @@ export async function getMembershipTrend(): Promise<{ label: string; members: nu
   return series.map((s) => ({ label: s.label, members: s.members }));
 }
 
-export async function periodSummary(periodId: number) {
-  const supabase = createClient();
-  const { data, error } = await supabase.rpc("period_summary", { p_period: periodId });
+export const periodSummary = unstable_cache(
+  async function periodSummary(periodId: number) {
+  const { data, error } = await db().rpc("period_summary", { p_period: periodId });
   if (error) throw new Error(error.message);
   const rows = (data ?? []) as { level: string; zone_id: number | null; name: string; members: number }[];
   return {
@@ -112,7 +137,10 @@ export async function periodSummary(periodId: number) {
       .map((r) => ({ zoneId: r.zone_id!, name: r.name, members: Number(r.members) }))
       .sort((a, b) => b.members - a.members),
   };
-}
+  },
+  ["period-summary"],
+  { tags: [MEMBERSHIP_TAG] },
+);
 
 export type DistrictCompareRow = {
   district_id: number;
@@ -128,9 +156,9 @@ export type DistrictCompareRow = {
   growth_pct: number | null;
 };
 
-export async function compareDistricts(prevId: number, curId: number): Promise<DistrictCompareRow[]> {
-  const supabase = createClient();
-  const { data, error } = await supabase.rpc("compare_districts", { p_prev: prevId, p_cur: curId });
+export const compareDistricts = unstable_cache(
+  async function compareDistricts(prevId: number, curId: number): Promise<DistrictCompareRow[]> {
+  const { data, error } = await db().rpc("compare_districts", { p_prev: prevId, p_cur: curId });
   if (error) throw new Error(error.message);
   return ((data ?? []) as Record<string, string>[]).map((r) => {
     const previous = Number(r.previous);
@@ -150,18 +178,24 @@ export async function compareDistricts(prevId: number, curId: number): Promise<D
       growth_pct: previous === 0 ? null : Math.round((net / previous) * 10000) / 100,
     };
   });
-}
+  },
+  ["compare-districts"],
+  { tags: [MEMBERSHIP_TAG] },
+);
 
-export async function membershipSeries(zoneId?: number) {
-  const supabase = createClient();
-  const { data, error } = await supabase.rpc("membership_series", { p_zone: zoneId ?? null });
-  if (error) throw new Error(error.message);
-  return ((data ?? []) as Record<string, number | string>[]).map((r) => ({
-    periodId: Number(r.period_id),
-    label: String(r.label),
-    members: Number(r.members),
-  }));
-}
+export const membershipSeries = unstable_cache(
+  async function membershipSeries(zoneId?: number) {
+    const { data, error } = await db().rpc("membership_series", { p_zone: zoneId ?? null });
+    if (error) throw new Error(error.message);
+    return ((data ?? []) as Record<string, number | string>[]).map((r) => ({
+      periodId: Number(r.period_id),
+      label: String(r.label),
+      members: Number(r.members),
+    }));
+  },
+  ["membership-series"],
+  { tags: [MEMBERSHIP_TAG] },
+);
 
 export type Mover = {
   employee_no: string;

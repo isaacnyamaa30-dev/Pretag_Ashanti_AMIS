@@ -1,6 +1,7 @@
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { requireAdmin } from "@/lib/auth";
+import { SETTINGS_TAG } from "@/lib/analytics";
 import { logAudit } from "@/lib/audit";
 import { PageHeader, Card } from "@/components/ui";
 import { SubmitButton } from "@/components/forms";
@@ -22,7 +23,10 @@ async function saveBands(formData: FormData) {
     .eq("key", "performance_bands");
   if (error) throw new Error(error.message);
   await logAudit({ action: "settings.update", resourceId: "performance_bands", details: { growing_above, declining_below } });
+  revalidateTag(SETTINGS_TAG);
   revalidatePath("/admin/settings");
+  revalidatePath("/dashboard");
+  revalidatePath("/analytics/regional");
 }
 
 async function saveWeights(formData: FormData) {

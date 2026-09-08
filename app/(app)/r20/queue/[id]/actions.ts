@@ -1,11 +1,12 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { requireStaff, requireAdmin } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import { normKey } from "@/lib/r20/normalize";
+import { MEMBERSHIP_TAG } from "@/lib/analytics";
 
 export async function approveUpload(formData: FormData) {
   await requireStaff();
@@ -23,6 +24,7 @@ export async function approveUpload(formData: FormData) {
     resourceId: uploadId,
     details: result as Record<string, unknown>,
   });
+  revalidateTag(MEMBERSHIP_TAG);
   revalidatePath(`/r20/queue/${uploadId}`);
   revalidatePath("/dashboard");
   redirect(`/r20/queue/${uploadId}?imported=1`);
@@ -38,6 +40,7 @@ export async function setPeriodLock(formData: FormData) {
   const { error } = await supabase.rpc("set_period_lock", { p_period_id: periodId, p_lock: lock });
   if (error) throw new Error(error.message);
   await logAudit({ action: lock ? "period.lock" : "period.unlock", resourceType: "reporting_period", resourceId: periodId });
+  revalidateTag(MEMBERSHIP_TAG);
   if (uploadId) revalidatePath(`/r20/queue/${uploadId}`);
 }
 

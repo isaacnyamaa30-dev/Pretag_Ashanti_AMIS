@@ -1,9 +1,10 @@
 "use server";
 
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { requireAdmin } from "@/lib/auth";
+import { MEMBERSHIP_TAG } from "@/lib/analytics";
 
 type Result = { ok: boolean; text: string };
 
@@ -51,6 +52,7 @@ export async function resetMembershipData(_prev: Result | null, formData: FormDa
     cleared_uploads: number;
   };
 
+  revalidateTag(MEMBERSHIP_TAG);
   revalidatePath("/dashboard");
   revalidatePath("/admin/settings");
   return {
