@@ -1,0 +1,382 @@
+/**
+ * Zonal Membership Export - a standalone module, separate from the existing
+ * Export Centre (`lib/r20/export.ts`), producing a stripped-down four-column
+ * membership register (Employee No / Name / Management Unit / District) per
+ * zone, for sharing with Zonal Officers. Does not touch or depend on the
+ * existing export code.
+ */
+import ExcelJS from "exceljs";
+import JSZip from "jszip";
+import {
+  Document,
+  Packer,
+  Paragraph,
+  TextRun,
+  HeadingLevel,
+  Table,
+  TableRow,
+  TableCell,
+  WidthType,
+  AlignmentType,
+  PageOrientation,
+  Header,
+  Footer,
+  PageNumber,
+  ShadingType,
+} from "docx";
+import { createClient } from "@/lib/supabase/server";
+
+const BRAND_RED = "C4161C";
+const GOLD_WASH = "F7EFD5";
+
+export type RegisterMember = {
+  employeeNo: string;
+  name: string;
+  managementUnit: string;
+  district: string;
+};
+
+export type ZoneRegister = {
+  zoneId: number;
+  zoneName: string;
+  periodLabel: string;
+  members: RegisterMember[];
+  districts: { name: string; count: number }[];
+};
+
+/** A clean .xlsx-safe sheet name, never empty, never a duplicate within one workbook. */
+function sheetName(name: string, used: Set<string>) {
+  let base = name.replace(/[[\]:*?/\\]/g, " ").trim().slice(0, 31) || "Sheet";
+  let candidate = base;
+  let n = 2;
+  while (used.has(candidate.toLowerCase())) {
+    const suffix = ` (${n})`;
+    candidate = base.slice(0, 31 - suffix.length) + suffix;
+    n += 1;
+  }
+  used.add(candidate.toLowerCase());
+  return candidate;
+}
+
+export async function getZoneRegister(periodId: number, zoneId: number, periodLabel: string): Promise<ZoneRegister> {
+  const supabase = createClient();
+
+  const [{ data: zone }, { data: zoneDistricts }] = await Promise.all([
+    supabase.from("zones").select("zone_name").eq("id", zoneId).single(),
+    supabase.from("districts").select("district_name").eq("zone_id", zoneId).order("district_name"),
+  ]);
+
+  type Row = {
+    employee_no: string;
+    employee_name: string | null;
+    management_unit: string | null;
+    raw_district: string | null;
+    districts: { district_name?: string } | null;
+  };
+
+  const rows: Row[] = [];
+  const PAGE = 1000;
+  for (let from = 0; ; from += PAGE) {
+    const { data, error } = await supabase
+      .from("membership_snapshots")
+      .select("employee_no, employee_name, management_unit, raw_district, districts:district_id(district_name)")
+      .eq("period_id", periodId)
+      .eq("zone_id", zoneId)
+      .range(from, from + PAGE - 1);
+    if (error) throw new Error(error.message);
+    rows.push(...((data ?? []) as unknown as Row[]));
+    if (!data || data.length < PAGE) break;
+  }
+
+  const members: RegisterMember[] = rows.map((r) => ({
+    employeeNo: r.employee_no,
+    name: r.employee_name ?? "",
+    managementUnit: r.management_unit ?? "",
+    district: r.districts?.district_name ?? r.raw_district ?? "Unassigned",
+  }));
+
+  members.sort((a, b) => a.district.localeCompare(b.district) || a.name.localeCompare(b.name));
+
+  // Every official district of this zone gets a row/sheet, even one with zero
+  // members this period - not just districts that happen to appear in the data.
+  const districtCounts = new Map<string, number>();
+  for (const d of zoneDistricts ?? []) districtCounts.set(d.district_name, 0);
+  for (const m of members) districtCounts.set(m.district, (districtCounts.get(m.district) ?? 0) + 1);
+  const districts = [...districtCounts.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  return {
+    zoneId,
+    zoneName: zone?.zone_name ?? `Zone ${zoneId}`,
+    periodLabel,
+    members,
+    districts,
+  };
+}
+
+function autoWidth(values: string[], min = 10, max = 48) {
+  const longest = values.reduce((m, v) => Math.max(m, v.length), 0);
+  return Math.min(max, Math.max(min, longest + 2));
+}
+
+function styleHeaderRow(row: ExcelJS.Row) {
+  row.eachCell((cell) => {
+    cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: `FF${BRAND_RED}` } };
+    cell.alignment = { vertical: "middle" };
+    cell.border = {
+      top: { style: "thin", color: { argb: "FF999999" } },
+      bottom: { style: "thin", color: { argb: "FF999999" } },
+      left: { style: "thin", color: { argb: "FF999999" } },
+      right: { style: "thin", color: { argb: "FF999999" } },
+    };
+  });
+}
+
+function writeMemberSheet(wb: ExcelJS.Workbook, name: string, title: string[], members: RegisterMember[], used: Set<string>) {
+  const ws = wb.addWorksheet(sheetName(name, used));
+  title.forEach((line, i) => {
+    const row = ws.addRow([line]);
+    row.font = i === 0 ? { bold: true, size: 14 } : { italic: i > 1, size: 11 };
+  });
+  ws.addRow([]);
+
+  const headerRowNo = ws.lastRow!.number + 1;
+  const header = ws.addRow(["EMPLOYEE NO", "NAME OF EMPLOYEE", "MANAGEMENT UNIT", "DISTRICT"]);
+  styleHeaderRow(header);
+
+  members.forEach((m, i) => {
+    const row = ws.addRow([m.employeeNo, m.name, m.managementUnit, m.district]);
+    const stripe = i % 2 === 1;
+    row.eachCell((cell, col) => {
+      if (col === 1) cell.numFmt = "@"; // employee no stays text - no lost leading zeros
+      cell.border = {
+        top: { style: "thin", color: { argb: "FFDDD5C0" } },
+        bottom: { style: "thin", color: { argb: "FFDDD5C0" } },
+        left: { style: "thin", color: { argb: "FFDDD5C0" } },
+        right: { style: "thin", color: { argb: "FFDDD5C0" } },
+      };
+      if (stripe) cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: `FF${GOLD_WASH}` } };
+    });
+  });
+
+  ws.getColumn(1).width = autoWidth(["EMPLOYEE NO", ...members.map((m) => m.employeeNo)]);
+  ws.getColumn(2).width = autoWidth(["NAME OF EMPLOYEE", ...members.map((m) => m.name)]);
+  ws.getColumn(3).width = autoWidth(["MANAGEMENT UNIT", ...members.map((m) => m.managementUnit)]);
+  ws.getColumn(4).width = autoWidth(["DISTRICT", ...members.map((m) => m.district)]);
+  ws.views = [{ state: "frozen", ySplit: headerRowNo }];
+  ws.autoFilter = { from: { row: headerRowNo, column: 1 }, to: { row: headerRowNo, column: 4 } };
+  return ws;
+}
+
+export async function buildZoneRegisterExcel(register: ZoneRegister) {
+  const { zoneName, periodLabel, members, districts } = register;
+  const wb = new ExcelJS.Workbook();
+  wb.creator = "PRETAG AMIS";
+  const used = new Set<string>();
+
+  const summary = wb.addWorksheet(sheetName("Summary", used));
+  summary.addRow(["PRETAG ASHANTI REGION"]).font = { bold: true, size: 14 };
+  summary.addRow([`${zoneName.toUpperCase()} - MEMBERSHIP REGISTER`]).font = { bold: true, size: 12 };
+  summary.addRow([`R20 Period: ${periodLabel}`]).font = { italic: true };
+  summary.addRow([]);
+  summary.addRow(["Total members", members.length]).font = { bold: true };
+  summary.addRow(["Number of districts", districts.length]).font = { bold: true };
+  summary.addRow([]);
+  const sumHeader = summary.addRow(["DISTRICT", "MEMBERS"]);
+  styleHeaderRow(sumHeader);
+  for (const d of districts) summary.addRow([d.name, d.count]);
+  summary.getColumn(1).width = autoWidth(["DISTRICT", ...districts.map((d) => d.name)]);
+  summary.getColumn(2).width = 14;
+
+  writeMemberSheet(
+    wb,
+    "All Members",
+    ["PRETAG ASHANTI REGION", `${zoneName.toUpperCase()} - MEMBERSHIP REGISTER`, `R20 Period: ${periodLabel}`],
+    members,
+    used,
+  );
+
+  for (const d of districts) {
+    writeMemberSheet(
+      wb,
+      d.name,
+      [
+        "PRETAG ASHANTI REGION",
+        `${zoneName.toUpperCase()} - MEMBERSHIP REGISTER`,
+        `District: ${d.name}  ·  R20 Period: ${periodLabel}`,
+      ],
+      members.filter((m) => m.district === d.name),
+      used,
+    );
+  }
+
+  const fname = `PRETAG_${zoneName.replace(/\s+/g, "_")}_MEMBERSHIP_REGISTER_${periodLabel.replace(/\s+/g, "_")}.xlsx`.toUpperCase();
+  return { buffer: Buffer.from(await wb.xlsx.writeBuffer()), filename: fname };
+}
+
+const WIDTHS = [14, 28, 34, 24]; // percent
+
+function wcell(text: string, opts: { bold?: boolean; header?: boolean; pct: number }) {
+  return new TableCell({
+    width: { size: opts.pct, type: WidthType.PERCENTAGE },
+    shading: opts.header ? { type: ShadingType.SOLID, color: BRAND_RED, fill: BRAND_RED } : undefined,
+    children: [
+      new Paragraph({
+        children: [
+          new TextRun({
+            text,
+            bold: opts.bold,
+            size: 18,
+            color: opts.header ? "FFFFFF" : undefined,
+          }),
+        ],
+      }),
+    ],
+  });
+}
+
+function memberTable(members: RegisterMember[]) {
+  const header = new TableRow({
+    tableHeader: true,
+    children: [
+      wcell("EMPLOYEE NO", { bold: true, header: true, pct: WIDTHS[0] }),
+      wcell("NAME OF EMPLOYEE", { bold: true, header: true, pct: WIDTHS[1] }),
+      wcell("MANAGEMENT UNIT", { bold: true, header: true, pct: WIDTHS[2] }),
+      wcell("DISTRICT", { bold: true, header: true, pct: WIDTHS[3] }),
+    ],
+  });
+  const body = members.map(
+    (m) =>
+      new TableRow({
+        children: [
+          wcell(m.employeeNo, { pct: WIDTHS[0] }),
+          wcell(m.name, { pct: WIDTHS[1] }),
+          wcell(m.managementUnit, { pct: WIDTHS[2] }),
+          wcell(m.district, { pct: WIDTHS[3] }),
+        ],
+      }),
+  );
+  return new Table({ width: { size: 100, type: WidthType.PERCENTAGE }, rows: [header, ...body] });
+}
+
+const A4_LANDSCAPE = { width: 16838, height: 11906, orientation: PageOrientation.LANDSCAPE };
+
+export async function buildZoneRegisterWord(register: ZoneRegister) {
+  const { zoneName, periodLabel, members, districts } = register;
+
+  const header = new Header({
+    children: [
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({ text: "PRETAG ASHANTI REGION  ·  ", bold: true, size: 16, color: BRAND_RED }),
+          new TextRun({ text: `${zoneName.toUpperCase()} MEMBERSHIP REGISTER  ·  R20 PERIOD: ${periodLabel.toUpperCase()}`, size: 16 }),
+        ],
+      }),
+    ],
+  });
+  const footer = new Footer({
+    children: [
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({ text: "Pre-Tertiary Teachers Association of Ghana - Ashanti Region  ·  Page ", size: 14, color: "666666" }),
+          new TextRun({ children: [PageNumber.CURRENT], size: 14, color: "666666" }),
+          new TextRun({ text: " of ", size: 14, color: "666666" }),
+          new TextRun({ children: [PageNumber.TOTAL_PAGES], size: 14, color: "666666" }),
+        ],
+      }),
+    ],
+  });
+
+  const children: (Paragraph | Table)[] = [
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      children: [new TextRun({ text: "PRETAG ASHANTI REGION", bold: true, size: 32, color: BRAND_RED })],
+    }),
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      heading: HeadingLevel.HEADING_1,
+      children: [new TextRun(zoneName.toUpperCase())],
+    }),
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      children: [new TextRun({ text: "MEMBERSHIP REGISTER", bold: true, size: 24 })],
+    }),
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 200 },
+      children: [new TextRun({ text: `R20 PERIOD: ${periodLabel.toUpperCase()}`, italics: true, size: 20 })],
+    }),
+    new Paragraph({
+      children: [
+        new TextRun({ text: `Zone total: ${members.length} member${members.length === 1 ? "" : "s"} across ${districts.length} district${districts.length === 1 ? "" : "s"}.`, bold: true, size: 20 }),
+      ],
+    }),
+    new Paragraph({ text: "" }),
+  ];
+
+  for (const d of districts) {
+    const dMembers = members.filter((m) => m.district === d.name);
+    children.push(
+      new Paragraph({
+        heading: HeadingLevel.HEADING_2,
+        spacing: { before: 260, after: 100 },
+        children: [new TextRun({ text: `DISTRICT: ${d.name.toUpperCase()}`, bold: true, color: BRAND_RED })],
+      }),
+      memberTable(dMembers),
+      new Paragraph({
+        spacing: { before: 100, after: 100 },
+        children: [new TextRun({ text: `Total: ${dMembers.length} member${dMembers.length === 1 ? "" : "s"}`, italics: true, size: 18 })],
+      }),
+    );
+  }
+
+  const doc = new Document({
+    creator: "PRETAG AMIS",
+    title: `${zoneName} Membership Register - ${periodLabel}`,
+    sections: [
+      {
+        properties: { page: { size: A4_LANDSCAPE } },
+        headers: { default: header },
+        footers: { default: footer },
+        children,
+      },
+    ],
+  });
+
+  const fname = `PRETAG_${zoneName.replace(/\s+/g, "_")}_MEMBERSHIP_REGISTER_${periodLabel.replace(/\s+/g, "_")}.docx`.toUpperCase();
+  return { buffer: await Packer.toBuffer(doc), filename: fname };
+}
+
+export type AllZonesFormat = "xlsx" | "docx" | "both";
+
+/** One ZIP with a folder per zone (all 18, even an empty one), each holding the
+ *  requested format(s) of that zone's membership register. */
+export async function buildAllZonesRegisterZip(periodId: number, periodLabel: string, format: AllZonesFormat) {
+  const supabase = createClient();
+  const { data: zones } = await supabase.from("zones").select("id, zone_name").order("zone_name");
+
+  const zip = new JSZip();
+  for (const z of zones ?? []) {
+    const register = await getZoneRegister(periodId, z.id, periodLabel);
+    const folder = z.zone_name.replace(/[\\/:*?"<>|]/g, " ").trim();
+    if (format === "xlsx" || format === "both") {
+      const { buffer, filename } = await buildZoneRegisterExcel(register);
+      zip.file(`${folder}/${filename}`, buffer);
+    }
+    if (format === "docx" || format === "both") {
+      const { buffer, filename } = await buildZoneRegisterWord(register);
+      zip.file(`${folder}/${filename}`, buffer);
+    }
+  }
+
+  return {
+    buffer: await zip.generateAsync({ type: "nodebuffer" }),
+    filename: `PRETAG_ASHANTI_ALL_ZONES_MEMBERSHIP_REGISTER_${periodLabel.replace(/\s+/g, "_")}.zip`.toUpperCase(),
+  };
+}
+
+export const BULK_EXPORT_ROLES = ["Super Administrator", "Regional Administrator", "Regional Data Officer"];

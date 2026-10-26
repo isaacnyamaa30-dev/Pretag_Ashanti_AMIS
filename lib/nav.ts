@@ -49,7 +49,10 @@ export const NAV: NavGroup[] = [
   },
   {
     label: "Export Centre",
-    items: [{ label: "Zone R20s", href: "/exports", ready: true }],
+    items: [
+      { label: "Zone R20s", href: "/exports", ready: true },
+      { label: "Zonal Membership Export", href: "/exports/zonal", ready: true },
+    ],
   },
   {
     label: "Administration",

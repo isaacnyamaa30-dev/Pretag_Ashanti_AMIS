@@ -62,7 +62,9 @@ export function CompareTable({
                 <td className="px-3 py-2 text-right tabular-nums">{r.previous.toLocaleString()}</td>
                 <td className="px-3 py-2 text-right tabular-nums">{r.current.toLocaleString()}</td>
                 <td className="px-3 py-2 text-right tabular-nums text-grow">+{r.added}</td>
-                <td className="px-3 py-2 text-right tabular-nums text-decline">&minus;{r.missing}</td>
+                <td className="px-3 py-2 text-right tabular-nums text-decline">
+                  {r.missing ? <>&minus;{r.missing}</> : 0}
+                </td>
                 {showTransfers && (
                   <td className="px-3 py-2 text-right tabular-nums text-grow">
                     {r.transfers_in ? `+${r.transfers_in}` : "-"}

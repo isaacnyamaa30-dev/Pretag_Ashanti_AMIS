@@ -102,7 +102,7 @@ export default async function DistrictAnalysisPage() {
                 <td className="px-3 py-2 text-right tabular-nums">{r.previous}</td>
                 <td className="px-3 py-2 text-right tabular-nums">{r.current}</td>
                 <td className="px-3 py-2 text-right tabular-nums text-grow">+{r.added}</td>
-                <td className="px-3 py-2 text-right tabular-nums text-decline">-{r.missing}</td>
+                <td className="px-3 py-2 text-right tabular-nums text-decline">{r.missing ? `-${r.missing}` : 0}</td>
                 <td className="px-3 py-2 text-right tabular-nums text-ink-3">{r.transfers_in || "-"}</td>
                 <td className="px-3 py-2 text-right tabular-nums text-ink-3">{r.transfers_out || "-"}</td>
                 <td className={`px-3 py-2 text-right tabular-nums ${r.net > 0 ? "text-grow" : r.net < 0 ? "text-decline" : ""}`}>

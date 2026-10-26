@@ -42,7 +42,7 @@ export function TrendChart({
   return (
     <div style={{ width: "100%", height: 260 }}>
       <ResponsiveContainer>
-        <LineChart data={merged} margin={{ top: 8, right: 16, bottom: 4, left: 8 }}>
+        <LineChart data={merged} margin={{ top: 8, right: 48, bottom: 4, left: 8 }}>
           <CartesianGrid stroke="var(--border)" strokeDasharray="3 3" vertical={false} />
           <XAxis
             dataKey="label"

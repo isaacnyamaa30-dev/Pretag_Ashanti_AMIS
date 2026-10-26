@@ -65,6 +65,15 @@ export default async function DashboardPage() {
         sub={previous ? `${previous.label} to ${latest.label}` : `${latest.label} - first imported period`}
       />
 
+      <div className="mb-6">
+        <Link
+          href="/exports/zonal"
+          className="inline-flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-wide btn-3d px-4 py-2.5"
+        >
+          <span aria-hidden>&#128202; &#8681;</span> Zonal Membership Export
+        </Link>
+      </div>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
         <StatTile value={summary.region.toLocaleString()} label={`members (${latest.label})`} />
         {region ? (
