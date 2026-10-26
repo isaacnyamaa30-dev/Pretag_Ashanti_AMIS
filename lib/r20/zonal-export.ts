@@ -401,3 +401,474 @@ export async function buildAllZonesRegisterZip(periodId: number, periodLabel: st
 }
 
 export const BULK_EXPORT_ROLES = ["Super Administrator", "Regional Administrator", "Regional Data Officer"];
+
+/* ------------------------------------------------------------------------ *
+ * Expandable Zone -> District -> Management Unit directory, plus district-
+ * and unit-level downloads. Builds on the types/helpers above; does not
+ * change any existing zone-level behaviour.
+ * ------------------------------------------------------------------------ */
+
+export type DirectoryUnit = { name: string; count: number; members: RegisterMember[] };
+export type DirectoryDistrict = { id: number; name: string; count: number; units: DirectoryUnit[] };
+export type DirectoryZone = { id: number; name: string; count: number; districts: DirectoryDistrict[] };
+export type DirectoryTree = {
+  periodLabel: string;
+  totalMembers: number;
+  zones: DirectoryZone[];
+};
+
+export type ZonalScope =
+  | { level: "region" }
+  | { level: "zone"; zoneId: number }
+  | { level: "district"; districtId: number };
+
+export const ZONE_EXECUTIVE_ROLE = "Zone Executive";
+export const DISTRICT_EXECUTIVE_ROLE = "District Executive";
+
+/** Who may open the directory at all, and how far their own view/export reach
+ *  extends. Region-wide roles (existing STAFF_ROLES) see everything; a Zone
+ *  Executive is confined to their own zone; a District Executive to their own
+ *  district. Anyone else (including Viewer, or a scoped role missing its
+ *  zone/district assignment) gets no access. */
+export function resolveZonalScope(profile: {
+  role: string;
+  zone_id: number | null;
+  district_id: number | null;
+}): ZonalScope | null {
+  if (["Super Administrator", "Regional Administrator", "Regional Executive", "Regional Data Officer"].includes(profile.role)) {
+    return { level: "region" };
+  }
+  if (profile.role === ZONE_EXECUTIVE_ROLE && profile.zone_id != null) {
+    return { level: "zone", zoneId: profile.zone_id };
+  }
+  if (profile.role === DISTRICT_EXECUTIVE_ROLE && profile.district_id != null) {
+    return { level: "district", districtId: profile.district_id };
+  }
+  return null;
+}
+
+type SnapshotRow = {
+  employee_no: string;
+  employee_name: string | null;
+  management_unit: string | null;
+  raw_district: string | null;
+  zone_id: number | null;
+  district_id: number | null;
+  districts: { district_name?: string } | null;
+};
+
+async function fetchScopedSnapshots(
+  periodId: number,
+  filter: { zoneId?: number; districtId?: number },
+): Promise<SnapshotRow[]> {
+  const supabase = createClient();
+  const rows: SnapshotRow[] = [];
+  const PAGE = 1000;
+  for (let from = 0; ; from += PAGE) {
+    let q = supabase
+      .from("membership_snapshots")
+      .select("employee_no, employee_name, management_unit, raw_district, zone_id, district_id, districts:district_id(district_name)")
+      .eq("period_id", periodId)
+      .range(from, from + PAGE - 1);
+    if (filter.zoneId) q = q.eq("zone_id", filter.zoneId);
+    if (filter.districtId) q = q.eq("district_id", filter.districtId);
+    const { data, error } = await q;
+    if (error) throw new Error(error.message);
+    rows.push(...((data ?? []) as unknown as SnapshotRow[]));
+    if (!data || data.length < PAGE) break;
+  }
+  return rows;
+}
+
+/** The full expandable directory for a period, optionally narrowed to one
+ *  zone or one district (for a Zone/District Executive's restricted view).
+ *  Management units are grouped by their exact stored text - never folded
+ *  together just because two entries differ only in case or spacing. */
+export async function getDirectoryTree(
+  periodId: number,
+  periodLabel: string,
+  scope: ZonalScope = { level: "region" },
+): Promise<DirectoryTree> {
+  const supabase = createClient();
+
+  const zoneFilter = scope.level === "zone" ? scope.zoneId : undefined;
+  const districtFilter = scope.level === "district" ? scope.districtId : undefined;
+
+  let zonesQuery = supabase.from("zones").select("id, zone_name").order("zone_name");
+  if (zoneFilter) zonesQuery = zonesQuery.eq("id", zoneFilter);
+  if (districtFilter) {
+    const { data: d } = await supabase.from("districts").select("zone_id").eq("id", districtFilter).single();
+    if (d?.zone_id) zonesQuery = zonesQuery.eq("id", d.zone_id);
+  }
+
+  let districtsQuery = supabase.from("districts").select("id, district_name, zone_id").order("district_name");
+  if (zoneFilter) districtsQuery = districtsQuery.eq("zone_id", zoneFilter);
+  if (districtFilter) districtsQuery = districtsQuery.eq("id", districtFilter);
+
+  const [{ data: zoneRows }, { data: districtRows }, rows] = await Promise.all([
+    zonesQuery,
+    districtsQuery,
+    fetchScopedSnapshots(periodId, { zoneId: zoneFilter, districtId: districtFilter }),
+  ]);
+
+  const districtsByZone = new Map<number, { id: number; name: string }[]>();
+  for (const d of districtRows ?? []) {
+    const list = districtsByZone.get(d.zone_id) ?? [];
+    list.push({ id: d.id, name: d.district_name });
+    districtsByZone.set(d.zone_id, list);
+  }
+
+  // zoneId -> districtId -> unit name (exact) -> members
+  const byZone = new Map<number, Map<number, Map<string, RegisterMember[]>>>();
+  for (const r of rows) {
+    if (r.zone_id == null || r.district_id == null) continue;
+    const member: RegisterMember = {
+      employeeNo: r.employee_no,
+      name: r.employee_name ?? "",
+      managementUnit: r.management_unit ?? "",
+      district: r.districts?.district_name ?? r.raw_district ?? "Unassigned",
+    };
+    let zoneMap = byZone.get(r.zone_id);
+    if (!zoneMap) byZone.set(r.zone_id, (zoneMap = new Map()));
+    let distMap = zoneMap.get(r.district_id);
+    if (!distMap) zoneMap.set(r.district_id, (distMap = new Map()));
+    const unitKey = member.managementUnit; // exact text - never normalised for grouping
+    const list = distMap.get(unitKey) ?? [];
+    list.push(member);
+    distMap.set(unitKey, list);
+  }
+
+  let totalMembers = 0;
+  const zones: DirectoryZone[] = (zoneRows ?? []).map((z) => {
+    const zoneMap = byZone.get(z.id);
+    const districts: DirectoryDistrict[] = (districtsByZone.get(z.id) ?? []).map((d) => {
+      const distMap = zoneMap?.get(d.id);
+      const units: DirectoryUnit[] = [...(distMap?.entries() ?? [])]
+        .map(([name, members]) => {
+          members.sort((a, b) => sortKey(a.name).localeCompare(sortKey(b.name)));
+          return { name, count: members.length, members };
+        })
+        .sort((a, b) => {
+          const aBlank = sortKey(a.name) === "";
+          const bBlank = sortKey(b.name) === "";
+          if (aBlank !== bBlank) return aBlank ? 1 : -1;
+          return sortKey(a.name).localeCompare(sortKey(b.name));
+        });
+      const count = units.reduce((n, u) => n + u.count, 0);
+      return { id: d.id, name: d.name, count, units };
+    });
+    const count = districts.reduce((n, d) => n + d.count, 0);
+    totalMembers += count;
+    return { id: z.id, name: z.zone_name, count, districts };
+  });
+
+  return { periodLabel, totalMembers, zones };
+}
+
+type GroupBreakdown = { name: string; count: number };
+
+/** Shared Excel builder behind the zone/district/unit registers: a Summary
+ *  sheet (skipped when there is nothing to break down further), an "All
+ *  Members" sheet, and one sheet per sub-group when `groupOf` is given. */
+async function buildRegisterWorkbook(opts: {
+  titleLines: string[];
+  members: RegisterMember[];
+  breakdown?: { label: string; rows: GroupBreakdown[] };
+  groupOf?: (m: RegisterMember) => string;
+  filename: string;
+}) {
+  const { titleLines, members, breakdown, groupOf, filename } = opts;
+  const wb = new ExcelJS.Workbook();
+  wb.creator = "PRETAG AMIS";
+  const used = new Set<string>();
+
+  if (breakdown && breakdown.rows.length > 0) {
+    const summary = wb.addWorksheet(sheetName("Summary", used));
+    titleLines.forEach((line, i) => {
+      summary.addRow([line]).font = i === 0 ? { bold: true, size: 14 } : { bold: i === 1, italic: i > 1, size: i === 1 ? 12 : 11 };
+    });
+    summary.addRow([]);
+    summary.addRow(["Total members", members.length]).font = { bold: true };
+    summary.addRow([`Number of ${breakdown.label.toLowerCase()}s`, breakdown.rows.length]).font = { bold: true };
+    summary.addRow([]);
+    const sumHeader = summary.addRow([breakdown.label.toUpperCase(), "MEMBERS"]);
+    styleHeaderRow(sumHeader);
+    for (const r of breakdown.rows) summary.addRow([r.name, r.count]);
+    summary.getColumn(1).width = autoWidth([breakdown.label.toUpperCase(), ...breakdown.rows.map((r) => r.name)]);
+    summary.getColumn(2).width = 14;
+  }
+
+  writeMemberSheet(wb, "All Members", titleLines, members, used);
+
+  if (groupOf && breakdown) {
+    for (const r of breakdown.rows) {
+      writeMemberSheet(
+        wb,
+        r.name,
+        [...titleLines.slice(0, 2), `${breakdown.label}: ${r.name}  ·  ${titleLines[titleLines.length - 1]}`],
+        members.filter((m) => groupOf(m) === r.name),
+        used,
+      );
+    }
+  }
+
+  return { buffer: Buffer.from(await wb.xlsx.writeBuffer()), filename };
+}
+
+function registerWordDoc(opts: {
+  headerLine: string;
+  heading1: string;
+  heading2?: string;
+  periodLabel: string;
+  totalLine: string;
+  sections: { heading: string; members: RegisterMember[] }[];
+  docTitle: string;
+}) {
+  const { headerLine, heading1, heading2, periodLabel, totalLine, sections, docTitle } = opts;
+
+  const header = new Header({
+    children: [
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({ text: "PRETAG ASHANTI REGION  ·  ", bold: true, size: 16, color: BRAND_RED }),
+          new TextRun({ text: `${headerLine}  ·  R20 PERIOD: ${periodLabel.toUpperCase()}`, size: 16 }),
+        ],
+      }),
+    ],
+  });
+  const footer = new Footer({
+    children: [
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [
+          new TextRun({ text: "Pre-Tertiary Teachers Association of Ghana - Ashanti Region  ·  Page ", size: 14, color: "666666" }),
+          new TextRun({ children: [PageNumber.CURRENT], size: 14, color: "666666" }),
+          new TextRun({ text: " of ", size: 14, color: "666666" }),
+          new TextRun({ children: [PageNumber.TOTAL_PAGES], size: 14, color: "666666" }),
+        ],
+      }),
+    ],
+  });
+
+  const children: (Paragraph | Table)[] = [
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      children: [new TextRun({ text: "PRETAG ASHANTI REGION", bold: true, size: 32, color: BRAND_RED })],
+    }),
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      heading: HeadingLevel.HEADING_1,
+      children: [new TextRun(heading1.toUpperCase())],
+    }),
+  ];
+  if (heading2) {
+    children.push(
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [new TextRun({ text: heading2.toUpperCase(), bold: true, size: 22 })],
+      }),
+    );
+  }
+  children.push(
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      children: [new TextRun({ text: "MEMBERSHIP REGISTER", bold: true, size: 24 })],
+    }),
+    new Paragraph({
+      alignment: AlignmentType.CENTER,
+      spacing: { after: 200 },
+      children: [new TextRun({ text: `R20 PERIOD: ${periodLabel.toUpperCase()}`, italics: true, size: 20 })],
+    }),
+    new Paragraph({ children: [new TextRun({ text: totalLine, bold: true, size: 20 })] }),
+    new Paragraph({ text: "" }),
+  );
+
+  for (const s of sections) {
+    children.push(
+      new Paragraph({
+        heading: HeadingLevel.HEADING_2,
+        spacing: { before: 260, after: 100 },
+        children: [new TextRun({ text: s.heading.toUpperCase(), bold: true, color: BRAND_RED })],
+      }),
+      memberTable(s.members),
+      new Paragraph({
+        spacing: { before: 100, after: 100 },
+        children: [
+          new TextRun({
+            text: `Total: ${s.members.length} member${s.members.length === 1 ? "" : "s"}`,
+            italics: true,
+            size: 18,
+          }),
+        ],
+      }),
+    );
+  }
+
+  return new Document({
+    creator: "PRETAG AMIS",
+    title: docTitle,
+    sections: [
+      {
+        properties: { page: { size: A4_LANDSCAPE } },
+        headers: { default: header },
+        footers: { default: footer },
+        children,
+      },
+    ],
+  });
+}
+
+const fileSafe = (s: string) => s.replace(/\s+/g, "_").toUpperCase();
+
+export type DistrictRegister = {
+  zoneId: number;
+  zoneName: string;
+  districtId: number;
+  districtName: string;
+  periodLabel: string;
+  members: RegisterMember[];
+  units: GroupBreakdown[];
+};
+
+export async function getDistrictRegister(periodId: number, districtId: number, periodLabel: string): Promise<DistrictRegister> {
+  const { data: district } = await createClient()
+    .from("districts")
+    .select("district_name, zone_id, zones(zone_name)")
+    .eq("id", districtId)
+    .single();
+  if (!district) throw new Error("District not found");
+
+  const rows = await fetchScopedSnapshots(periodId, { districtId });
+  const members: RegisterMember[] = rows.map((r) => ({
+    employeeNo: r.employee_no,
+    name: r.employee_name ?? "",
+    managementUnit: r.management_unit ?? "",
+    district: r.districts?.district_name ?? district.district_name,
+  }));
+  members.sort(compareMembers);
+
+  const unitCounts = new Map<string, number>();
+  for (const m of members) unitCounts.set(m.managementUnit, (unitCounts.get(m.managementUnit) ?? 0) + 1);
+  const units = [...unitCounts.entries()]
+    .map(([name, count]) => ({ name, count }))
+    .sort((a, b) => sortKey(a.name).localeCompare(sortKey(b.name)));
+
+  return {
+    zoneId: district.zone_id,
+    zoneName: (district.zones as unknown as { zone_name?: string } | null)?.zone_name ?? "",
+    districtId,
+    districtName: district.district_name,
+    periodLabel,
+    members,
+    units,
+  };
+}
+
+export async function buildDistrictRegisterExcel(r: DistrictRegister) {
+  const titleLines = [
+    "PRETAG ASHANTI REGION",
+    `${r.districtName.toUpperCase()} DISTRICT (${r.zoneName.toUpperCase()} ZONE) - MEMBERSHIP REGISTER`,
+    `R20 Period: ${r.periodLabel}`,
+  ];
+  return buildRegisterWorkbook({
+    titleLines,
+    members: r.members,
+    breakdown: { label: "Management Unit", rows: r.units },
+    groupOf: (m) => m.managementUnit,
+    filename: `PRETAG_${fileSafe(r.districtName)}_MEMBERSHIP_REGISTER_${fileSafe(r.periodLabel)}.xlsx`,
+  });
+}
+
+export async function buildDistrictRegisterWord(r: DistrictRegister) {
+  const doc = registerWordDoc({
+    headerLine: `${r.districtName.toUpperCase()} DISTRICT MEMBERSHIP REGISTER`,
+    heading1: r.districtName,
+    heading2: `${r.zoneName} Zone`,
+    periodLabel: r.periodLabel,
+    totalLine: `District total: ${r.members.length} member${r.members.length === 1 ? "" : "s"} across ${r.units.length} management unit${r.units.length === 1 ? "" : "s"}.`,
+    sections: r.units.map((u) => ({
+      heading: `Management Unit: ${u.name || "(not recorded)"}`,
+      members: r.members.filter((m) => m.managementUnit === u.name),
+    })),
+    docTitle: `${r.districtName} Membership Register - ${r.periodLabel}`,
+  });
+  return {
+    buffer: await Packer.toBuffer(doc),
+    filename: `PRETAG_${fileSafe(r.districtName)}_MEMBERSHIP_REGISTER_${fileSafe(r.periodLabel)}.docx`,
+  };
+}
+
+export type UnitRegister = {
+  zoneId: number;
+  zoneName: string;
+  districtId: number;
+  districtName: string;
+  unitName: string;
+  periodLabel: string;
+  members: RegisterMember[];
+};
+
+export async function getUnitRegister(
+  periodId: number,
+  districtId: number,
+  unitName: string,
+  periodLabel: string,
+): Promise<UnitRegister> {
+  const { data: district } = await createClient()
+    .from("districts")
+    .select("district_name, zone_id, zones(zone_name)")
+    .eq("id", districtId)
+    .single();
+  if (!district) throw new Error("District not found");
+
+  const rows = await fetchScopedSnapshots(periodId, { districtId });
+  const members: RegisterMember[] = rows
+    .filter((r) => (r.management_unit ?? "") === unitName)
+    .map((r) => ({
+      employeeNo: r.employee_no,
+      name: r.employee_name ?? "",
+      managementUnit: r.management_unit ?? "",
+      district: r.districts?.district_name ?? district.district_name,
+    }))
+    .sort((a, b) => sortKey(a.name).localeCompare(sortKey(b.name)));
+
+  return {
+    zoneId: district.zone_id,
+    zoneName: (district.zones as unknown as { zone_name?: string } | null)?.zone_name ?? "",
+    districtId,
+    districtName: district.district_name,
+    unitName,
+    periodLabel,
+    members,
+  };
+}
+
+export async function buildUnitRegisterExcel(r: UnitRegister) {
+  const titleLines = [
+    "PRETAG ASHANTI REGION",
+    `${r.unitName.toUpperCase() || "(NOT RECORDED)"} - MEMBERSHIP REGISTER`,
+    `${r.districtName} District, ${r.zoneName} Zone  ·  R20 Period: ${r.periodLabel}`,
+  ];
+  return buildRegisterWorkbook({
+    titleLines,
+    members: r.members,
+    filename: `PRETAG_${fileSafe(r.unitName || "UNRECORDED_UNIT")}_MEMBERSHIP_REGISTER_${fileSafe(r.periodLabel)}.xlsx`,
+  });
+}
+
+export async function buildUnitRegisterWord(r: UnitRegister) {
+  const doc = registerWordDoc({
+    headerLine: `${r.unitName.toUpperCase() || "(NOT RECORDED)"} MEMBERSHIP REGISTER`,
+    heading1: r.unitName || "(not recorded)",
+    heading2: `${r.districtName} District, ${r.zoneName} Zone`,
+    periodLabel: r.periodLabel,
+    totalLine: `Total: ${r.members.length} member${r.members.length === 1 ? "" : "s"}.`,
+    sections: [{ heading: r.unitName || "(not recorded)", members: r.members }],
+    docTitle: `${r.unitName} Membership Register - ${r.periodLabel}`,
+  });
+  return {
+    buffer: await Packer.toBuffer(doc),
+    filename: `PRETAG_${fileSafe(r.unitName || "UNRECORDED_UNIT")}_MEMBERSHIP_REGISTER_${fileSafe(r.periodLabel)}.docx`,
+  };
+}

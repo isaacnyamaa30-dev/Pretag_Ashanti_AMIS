@@ -1,14 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { requireStaff } from "@/lib/auth";
+import { requireUser } from "@/lib/auth";
 import { logAudit } from "@/lib/audit";
 import {
   getZoneRegister,
   buildZoneRegisterExcel,
   buildZoneRegisterWord,
+  getDistrictRegister,
+  buildDistrictRegisterExcel,
+  buildDistrictRegisterWord,
+  getUnitRegister,
+  buildUnitRegisterExcel,
+  buildUnitRegisterWord,
   buildAllZonesRegisterZip,
+  resolveZonalScope,
   BULK_EXPORT_ROLES,
   type AllZonesFormat,
+  type ZonalScope,
 } from "@/lib/r20/zonal-export";
 
 const XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
@@ -17,8 +25,28 @@ const DOCX_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingm
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
+const forbidden = (message: string) => NextResponse.json({ error: message }, { status: 403 });
+
+function zoneAllowed(zoneId: number, scope: ZonalScope) {
+  if (scope.level === "region") return true;
+  if (scope.level === "zone") return scope.zoneId === zoneId;
+  return false; // a district-scoped user has no whole-zone access
+}
+
+async function districtAllowed(districtId: number, scope: ZonalScope) {
+  if (scope.level === "region") return true;
+  if (scope.level === "district") return scope.districtId === districtId;
+  // scope.level === "zone": the district must belong to that zone
+  const { data } = await createClient().from("districts").select("zone_id").eq("id", districtId).single();
+  return data?.zone_id === scope.zoneId;
+}
+
 export async function GET(req: NextRequest) {
-  const session = await requireStaff();
+  const session = await requireUser();
+  if (!session.profile) return forbidden("No profile linked to this account");
+
+  const scope = resolveZonalScope(session.profile);
+  if (!scope) return forbidden("Not authorised for the Zonal Membership Export");
 
   const params = req.nextUrl.searchParams;
   const periodId = Number(params.get("period"));
@@ -35,7 +63,7 @@ export async function GET(req: NextRequest) {
 
   if (type === "all") {
     if (!BULK_EXPORT_ROLES.includes(session.profile.role)) {
-      return NextResponse.json({ error: "Not authorised for the bulk zone export" }, { status: 403 });
+      return forbidden("Not authorised for the bulk zone export");
     }
     const format = (params.get("format") as AllZonesFormat) ?? "both";
     if (!["xlsx", "docx", "both"].includes(format)) {
@@ -57,8 +85,54 @@ export async function GET(req: NextRequest) {
     });
   }
 
+  if (type === "district" || type === "district-docx") {
+    const districtId = Number(params.get("district"));
+    if (!districtId) return NextResponse.json({ error: "district required" }, { status: 400 });
+    if (!(await districtAllowed(districtId, scope))) return forbidden("Not authorised for that district");
+
+    const register = await getDistrictRegister(periodId, districtId, period.label);
+    const out = type === "district-docx" ? await buildDistrictRegisterWord(register) : await buildDistrictRegisterExcel(register);
+    await logAudit({
+      action: "export.zonal.district",
+      resourceType: "reporting_period",
+      resourceId: periodId,
+      details: { districtId, format: type === "district-docx" ? "docx" : "xlsx" },
+    });
+    return new NextResponse(out.buffer as BodyInit, {
+      headers: {
+        "Content-Type": type === "district-docx" ? DOCX_TYPE : XLSX_TYPE,
+        "Content-Disposition": `attachment; filename="${out.filename}"`,
+        "Cache-Control": "no-store",
+      },
+    });
+  }
+
+  if (type === "unit" || type === "unit-docx") {
+    const districtId = Number(params.get("district"));
+    const unitName = params.get("unit") ?? "";
+    if (!districtId) return NextResponse.json({ error: "district required" }, { status: 400 });
+    if (!(await districtAllowed(districtId, scope))) return forbidden("Not authorised for that district");
+
+    const register = await getUnitRegister(periodId, districtId, unitName, period.label);
+    const out = type === "unit-docx" ? await buildUnitRegisterWord(register) : await buildUnitRegisterExcel(register);
+    await logAudit({
+      action: "export.zonal.unit",
+      resourceType: "reporting_period",
+      resourceId: periodId,
+      details: { districtId, unitName, format: type === "unit-docx" ? "docx" : "xlsx" },
+    });
+    return new NextResponse(out.buffer as BodyInit, {
+      headers: {
+        "Content-Type": type === "unit-docx" ? DOCX_TYPE : XLSX_TYPE,
+        "Content-Disposition": `attachment; filename="${out.filename}"`,
+        "Cache-Control": "no-store",
+      },
+    });
+  }
+
   const zoneId = Number(params.get("zone"));
   if (!zoneId) return NextResponse.json({ error: "zone required" }, { status: 400 });
+  if (!zoneAllowed(zoneId, scope)) return forbidden("Not authorised for that zone");
 
   const register = await getZoneRegister(periodId, zoneId, period.label);
   const out =
