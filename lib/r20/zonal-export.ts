@@ -44,6 +44,27 @@ export type ZoneRegister = {
   districts: { name: string; count: number }[];
 };
 
+/** Case/whitespace-insensitive key for sorting only - the stored value (and
+ *  which members share a school) is never altered, so two genuinely different
+ *  management units are never folded into one group just because they compare
+ *  similarly once trimmed and upper-cased. */
+const sortKey = (s: string) => s.trim().toLocaleUpperCase();
+
+/** District (A-Z) -> Management Unit / school (A-Z, blank last) -> Name (A-Z). */
+function compareMembers(a: RegisterMember, b: RegisterMember) {
+  const district = sortKey(a.district).localeCompare(sortKey(b.district));
+  if (district !== 0) return district;
+
+  const aBlank = sortKey(a.managementUnit) === "";
+  const bBlank = sortKey(b.managementUnit) === "";
+  if (aBlank !== bBlank) return aBlank ? 1 : -1;
+
+  const unit = sortKey(a.managementUnit).localeCompare(sortKey(b.managementUnit));
+  if (unit !== 0) return unit;
+
+  return sortKey(a.name).localeCompare(sortKey(b.name));
+}
+
 /** A clean .xlsx-safe sheet name, never empty, never a duplicate within one workbook. */
 function sheetName(name: string, used: Set<string>) {
   let base = name.replace(/[[\]:*?/\\]/g, " ").trim().slice(0, 31) || "Sheet";
@@ -95,7 +116,7 @@ export async function getZoneRegister(periodId: number, zoneId: number, periodLa
     district: r.districts?.district_name ?? r.raw_district ?? "Unassigned",
   }));
 
-  members.sort((a, b) => a.district.localeCompare(b.district) || a.name.localeCompare(b.name));
+  members.sort(compareMembers);
 
   // Every official district of this zone gets a row/sheet, even one with zero
   // members this period - not just districts that happen to appear in the data.
