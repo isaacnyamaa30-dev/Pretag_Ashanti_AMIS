@@ -134,12 +134,12 @@ export function ZonalDirectory({
         </button>
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-2">
+      <div className="flex flex-col sm:flex-row flex-wrap gap-2 mb-2">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search zone, district, school, name or employee no"
-          className="flex-1 min-w-[220px] border border-border-strong rounded bg-ground px-3 py-2 text-sm outline-none focus:border-primary"
+          className="w-full sm:flex-1 sm:min-w-[220px] border border-border-strong rounded bg-ground px-3 py-2 text-sm outline-none focus:border-primary"
         />
         <select
           value={zoneFilter}
@@ -148,7 +148,7 @@ export function ZonalDirectory({
             setDistrictFilter("");
             setUnitFilter("");
           }}
-          className="border border-border-strong rounded bg-ground px-2.5 py-2 text-sm"
+          className="w-full sm:w-auto max-w-full border border-border-strong rounded bg-ground px-2.5 py-2 text-sm"
         >
           <option value="">All zones</option>
           {tree.zones.map((z) => (
@@ -161,7 +161,7 @@ export function ZonalDirectory({
             setDistrictFilter(e.target.value);
             setUnitFilter("");
           }}
-          className="border border-border-strong rounded bg-ground px-2.5 py-2 text-sm"
+          className="w-full sm:w-auto max-w-full border border-border-strong rounded bg-ground px-2.5 py-2 text-sm"
         >
           <option value="">All districts</option>
           {districtOptions.map((d) => (
@@ -171,7 +171,7 @@ export function ZonalDirectory({
         <select
           value={unitFilter}
           onChange={(e) => setUnitFilter(e.target.value)}
-          className="border border-border-strong rounded bg-ground px-2.5 py-2 text-sm max-w-full"
+          className="w-full sm:w-auto max-w-full border border-border-strong rounded bg-ground px-2.5 py-2 text-sm"
         >
           <option value="">All management units</option>
           {unitOptions.map((u) => (
@@ -194,13 +194,13 @@ export function ZonalDirectory({
                 <button
                   type="button"
                   onClick={() => toggle(zKey)}
-                  className="flex items-center gap-2 text-left font-display text-sm uppercase tracking-tight min-w-0"
+                  className="flex flex-1 items-center gap-2 text-left font-display text-sm uppercase tracking-tight min-w-0"
                 >
                   <Chevron open={zOpen} />
                   <span className="truncate">{zone.name} Zone</span>
                   <span className="font-mono text-xs text-ink-3 shrink-0">({zone.count.toLocaleString()} members)</span>
                 </button>
-                <div className="flex gap-2">
+                <div className="flex gap-2 shrink-0">
                   <DownloadLink href={`/api/exports/zonal?period=${periodId}&zone=${zone.id}&type=xlsx`} label="Excel" />
                   <DownloadLink href={`/api/exports/zonal?period=${periodId}&zone=${zone.id}&type=docx`} label="Word" />
                 </div>
@@ -217,13 +217,13 @@ export function ZonalDirectory({
                           <button
                             type="button"
                             onClick={() => toggle(dKey)}
-                            className="flex items-center gap-2 text-left font-mono text-sm min-w-0"
+                            className="flex flex-1 items-center gap-2 text-left font-mono text-sm min-w-0"
                           >
                             <Chevron open={dOpen} />
                             <span className="truncate">{district.name}</span>
                             <span className="font-mono text-xs text-ink-3 shrink-0">({district.count.toLocaleString()} members)</span>
                           </button>
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 shrink-0">
                             <DownloadLink href={`/api/exports/zonal?period=${periodId}&type=district&district=${district.id}`} label="Excel" />
                             <DownloadLink href={`/api/exports/zonal?period=${periodId}&type=district-docx&district=${district.id}`} label="Word" />
                           </div>
@@ -241,13 +241,13 @@ export function ZonalDirectory({
                                     <button
                                       type="button"
                                       onClick={() => toggle(uKey)}
-                                      className="flex items-center gap-2 text-left text-sm min-w-0"
+                                      className="flex flex-1 items-center gap-2 text-left text-sm min-w-0"
                                     >
                                       <Chevron open={uOpen} />
                                       <span className="truncate">{u.name || "(not recorded)"}</span>
                                       <span className="font-mono text-xs text-ink-3 shrink-0">({u.count.toLocaleString()} members)</span>
                                     </button>
-                                    <div className="flex gap-2">
+                                    <div className="flex gap-2 shrink-0">
                                       <DownloadLink
                                         href={`/api/exports/zonal?period=${periodId}&type=unit&district=${district.id}&unit=${unitParam}`}
                                         label="Excel"
