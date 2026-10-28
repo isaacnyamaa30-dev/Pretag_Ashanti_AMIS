@@ -18,6 +18,7 @@ import {
   type AllZonesFormat,
   type ZonalScope,
 } from "@/lib/r20/zonal-export";
+import { getRegionalSummary, buildRegionalSummaryExcel, buildRegionalSummaryWord } from "@/lib/r20/regional-summary";
 
 const XLSX_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 const DOCX_TYPE = "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
@@ -60,6 +61,26 @@ export async function GET(req: NextRequest) {
     .eq("id", periodId)
     .maybeSingle();
   if (!period) return NextResponse.json({ error: "period not found" }, { status: 404 });
+
+  if (type === "regional-summary" || type === "regional-summary-docx") {
+    if (scope.level !== "region") return forbidden("Not authorised for the regional summary");
+    const summary = await getRegionalSummary(periodId, period.label);
+    const docx = type === "regional-summary-docx";
+    const out = docx ? await buildRegionalSummaryWord(summary) : await buildRegionalSummaryExcel(summary);
+    await logAudit({
+      action: "export.zonal.regional_summary",
+      resourceType: "reporting_period",
+      resourceId: periodId,
+      details: { format: docx ? "docx" : "xlsx" },
+    });
+    return new NextResponse(out.buffer as BodyInit, {
+      headers: {
+        "Content-Type": docx ? DOCX_TYPE : XLSX_TYPE,
+        "Content-Disposition": `attachment; filename="${out.filename}"`,
+        "Cache-Control": "no-store",
+      },
+    });
+  }
 
   if (type === "all") {
     if (!BULK_EXPORT_ROLES.includes(session.profile.role)) {

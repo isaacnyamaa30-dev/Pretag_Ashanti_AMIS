@@ -28,6 +28,20 @@ function DownloadLink({ href, label }: { href: string; label: string }) {
   );
 }
 
+function PrintLink({ href }: { href: string }) {
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener"
+      className="font-mono text-[10px] uppercase tracking-wide border border-border-strong rounded px-2 py-1 hover:bg-surface-2 whitespace-nowrap"
+    >
+      <span aria-hidden>&#9113; </span>
+      Print
+    </a>
+  );
+}
+
 export function ZonalDirectory({
   tree,
   periodId,
@@ -203,6 +217,7 @@ export function ZonalDirectory({
                 <div className="flex gap-2 shrink-0">
                   <DownloadLink href={`/api/exports/zonal?period=${periodId}&zone=${zone.id}&type=xlsx`} label="Excel" />
                   <DownloadLink href={`/api/exports/zonal?period=${periodId}&zone=${zone.id}&type=docx`} label="Word" />
+                  <PrintLink href={`/exports/zonal/print?period=${periodId}&zone=${zone.id}&autoprint=1`} />
                 </div>
               </div>
 
@@ -226,6 +241,7 @@ export function ZonalDirectory({
                           <div className="flex gap-2 shrink-0">
                             <DownloadLink href={`/api/exports/zonal?period=${periodId}&type=district&district=${district.id}`} label="Excel" />
                             <DownloadLink href={`/api/exports/zonal?period=${periodId}&type=district-docx&district=${district.id}`} label="Word" />
+                            <PrintLink href={`/exports/zonal/print?period=${periodId}&district=${district.id}&autoprint=1`} />
                           </div>
                         </div>
 
@@ -256,6 +272,7 @@ export function ZonalDirectory({
                                         href={`/api/exports/zonal?period=${periodId}&type=unit-docx&district=${district.id}&unit=${unitParam}`}
                                         label="Word"
                                       />
+                                      <PrintLink href={`/exports/zonal/print?period=${periodId}&district=${district.id}&unit=${unitParam}&autoprint=1`} />
                                     </div>
                                   </div>
 

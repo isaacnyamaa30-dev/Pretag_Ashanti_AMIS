@@ -10,7 +10,7 @@ export const metadata = { title: "Zonal Membership Export - PRETAG AMIS" };
 export default async function ZonalExportPage({
   searchParams,
 }: {
-  searchParams: { period?: string };
+  searchParams: { period?: string; denied?: string };
 }) {
   const session = await requireUser();
   if (!session.profile) redirect("/dashboard?denied=1");
@@ -47,6 +47,12 @@ export default async function ZonalExportPage({
         sub="Browse the membership directory by zone, district and school - employee no, name, management unit and district - and download any level as Excel or Word."
       />
 
+      {searchParams.denied && (
+        <div className="mb-4 border-l-4 border-decline bg-decline-wash rounded px-4 py-3 text-sm">
+          That register or summary is outside the area your account is allowed to see.
+        </div>
+      )}
+
       <Card className="mb-6">
         <form method="get" className="flex flex-wrap items-end gap-3">
           <label className="flex flex-col gap-1">
@@ -61,6 +67,33 @@ export default async function ZonalExportPage({
             Show
           </button>
         </form>
+        {scope.level === "region" && (
+          <div className="mt-4 pt-4 border-t border-border">
+            <div className="text-[11px] font-mono uppercase tracking-wide text-ink-2 mb-2">Regional summary &middot; {period.label}</div>
+            <div className="flex flex-wrap gap-2">
+              <a
+                href={`/exports/zonal/summary?period=${period.id}`}
+                className="font-mono text-xs font-bold uppercase tracking-wide bg-primary text-on-primary rounded px-4 py-2"
+              >
+                <span aria-hidden>&#128202; </span>Regional Summary
+              </a>
+              <a href={`/api/exports/zonal?period=${period.id}&type=regional-summary`} className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2">
+                <span aria-hidden>&#8681; </span>Download Regional Summary — Excel
+              </a>
+              <a href={`/api/exports/zonal?period=${period.id}&type=regional-summary-docx`} className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2">
+                <span aria-hidden>&#8681; </span>Download Regional Summary — Word
+              </a>
+              <a
+                href={`/exports/zonal/summary?period=${period.id}&autoprint=1`}
+                target="_blank"
+                rel="noopener"
+                className="font-mono text-xs uppercase tracking-wide btn-3d px-3 py-2"
+              >
+                <span aria-hidden>&#9113; </span>Print Regional Summary
+              </a>
+            </div>
+          </div>
+        )}
       </Card>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">

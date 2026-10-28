@@ -26,7 +26,7 @@ import {
 } from "docx";
 import { createClient } from "@/lib/supabase/server";
 
-const BRAND_RED = "C4161C";
+export const BRAND_RED = "C4161C";
 const GOLD_WASH = "F7EFD5";
 
 export type RegisterMember = {
@@ -48,7 +48,7 @@ export type ZoneRegister = {
  *  which members share a school) is never altered, so two genuinely different
  *  management units are never folded into one group just because they compare
  *  similarly once trimmed and upper-cased. */
-const sortKey = (s: string) => s.trim().toLocaleUpperCase();
+export const sortKey = (s: string) => s.trim().toLocaleUpperCase();
 
 /** District (A-Z) -> Management Unit / school (A-Z, blank last) -> Name (A-Z). */
 function compareMembers(a: RegisterMember, b: RegisterMember) {
@@ -66,7 +66,7 @@ function compareMembers(a: RegisterMember, b: RegisterMember) {
 }
 
 /** A clean .xlsx-safe sheet name, never empty, never a duplicate within one workbook. */
-function sheetName(name: string, used: Set<string>) {
+export function sheetName(name: string, used: Set<string>) {
   let base = name.replace(/[[\]:*?/\\]/g, " ").trim().slice(0, 31) || "Sheet";
   let candidate = base;
   let n = 2;
@@ -136,12 +136,12 @@ export async function getZoneRegister(periodId: number, zoneId: number, periodLa
   };
 }
 
-function autoWidth(values: string[], min = 10, max = 48) {
+export function autoWidth(values: string[], min = 10, max = 48) {
   const longest = values.reduce((m, v) => Math.max(m, v.length), 0);
   return Math.min(max, Math.max(min, longest + 2));
 }
 
-function styleHeaderRow(row: ExcelJS.Row) {
+export function styleHeaderRow(row: ExcelJS.Row) {
   row.eachCell((cell) => {
     cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
     cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: `FF${BRAND_RED}` } };
@@ -871,4 +871,19 @@ export async function buildUnitRegisterWord(r: UnitRegister) {
     buffer: await Packer.toBuffer(doc),
     filename: `PRETAG_${fileSafe(r.unitName || "UNRECORDED_UNIT")}_MEMBERSHIP_REGISTER_${fileSafe(r.periodLabel)}.docx`,
   };
+}
+
+/** Server-side scope checks for the printable registers (same rules as the
+ *  zonal export route): region users reach everything, a Zone Executive only
+ *  their zone and its districts, a District Executive only their district. */
+export function zoneInScope(zoneId: number, scope: ZonalScope) {
+  if (scope.level === "region") return true;
+  return scope.level === "zone" && scope.zoneId === zoneId;
+}
+
+export async function districtInScope(districtId: number, scope: ZonalScope) {
+  if (scope.level === "region") return true;
+  if (scope.level === "district") return scope.districtId === districtId;
+  const { data } = await createClient().from("districts").select("zone_id").eq("id", districtId).single();
+  return data?.zone_id === scope.zoneId;
 }
